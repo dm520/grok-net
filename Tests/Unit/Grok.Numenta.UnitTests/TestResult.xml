@@ -1,0 +1,126 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!--This file represents the results of running a test suite-->
+<test-results name="C:\Temp\grok-net\Tests\Unit\Grok.Numenta.UnitTests\Grok.Numenta.Tests.nunit" total="56" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2012-11-30" time="17:47:26">
+  <environment nunit-version="2.6.2.12296" clr-version="2.0.50727.5466" os-version="Microsoft Windows NT 6.1.7601 Service Pack 1" platform="Win32NT" cwd="C:\Temp\grok-net\Tests\Unit\Grok.Numenta.UnitTests" machine-name="JARED-PC" user="jcasner" user-domain="CORP" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="Project" name="C:\Temp\grok-net\Tests\Unit\Grok.Numenta.UnitTests\Grok.Numenta.Tests.nunit" executed="True" result="Success" success="True" time="1.332" asserts="0">
+    <results>
+      <test-suite type="Assembly" name="C:\Temp\grok-net\Tests\Unit\Grok.Numenta.UnitTests\bin\Debug\Grok.Numenta.UnitTests.dll" executed="True" result="Success" success="True" time="1.310" asserts="0">
+        <results>
+          <test-suite type="Namespace" name="Grok" executed="True" result="Success" success="True" time="1.309" asserts="0">
+            <results>
+              <test-suite type="Namespace" name="Numenta" executed="True" result="Success" success="True" time="1.309" asserts="0">
+                <results>
+                  <test-suite type="Namespace" name="UnitTests" executed="True" result="Success" success="True" time="1.309" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="APIClientTests" executed="True" result="Success" success="True" time="1.071" asserts="0">
+                        <results>
+                          <test-case name="Grok.Numenta.UnitTests.APIClientTests.TestAppendData_GoodResponse" executed="True" result="Success" success="True" time="0.297" asserts="1" />
+                          <test-case name="Grok.Numenta.UnitTests.APIClientTests.TestConstructor" executed="True" result="Success" success="True" time="0.001" asserts="2" />
+                          <test-case name="Grok.Numenta.UnitTests.APIClientTests.TestCreateModel_BadRequest" executed="True" result="Success" success="True" time="0.390" asserts="1" />
+                          <test-case name="Grok.Numenta.UnitTests.APIClientTests.TestCreateModel_GoodRequest" executed="True" result="Success" success="True" time="0.134" asserts="1" />
+                          <test-case name="Grok.Numenta.UnitTests.APIClientTests.TestCreateProject_BadResponse" executed="True" result="Success" success="True" time="0.008" asserts="1" />
+                          <test-case name="Grok.Numenta.UnitTests.APIClientTests.TestCreateProject_GoodResponse" executed="True" result="Success" success="True" time="0.005" asserts="1" />
+                          <test-case name="Grok.Numenta.UnitTests.APIClientTests.TestCreateStream_BadResponse" executed="True" result="Success" success="True" time="0.021" asserts="1" />
+                          <test-case name="Grok.Numenta.UnitTests.APIClientTests.TestCreateStream_GoodResponse" executed="True" result="Success" success="True" time="0.042" asserts="1" />
+                          <test-case name="Grok.Numenta.UnitTests.APIClientTests.TestCreateSwarm_BadRequest" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+                          <test-case name="Grok.Numenta.UnitTests.APIClientTests.TestCreateSwarm_GoodRequest" executed="True" result="Success" success="True" time="0.026" asserts="1" />
+                          <test-case name="Grok.Numenta.UnitTests.APIClientTests.TestRetrieveModel_BadRequest" executed="True" result="Success" success="True" time="0.006" asserts="1" />
+                          <test-case name="Grok.Numenta.UnitTests.APIClientTests.TestRetrieveModel_GoodRequest" executed="True" result="Success" success="True" time="0.000" asserts="1" />
+                          <test-case name="Grok.Numenta.UnitTests.APIClientTests.TestRetrieveOutputData_BadRequest" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+                          <test-case name="Grok.Numenta.UnitTests.APIClientTests.TestRetrieveOutputData_GoodRequest" executed="True" result="Success" success="True" time="0.022" asserts="1" />
+                          <test-case name="Grok.Numenta.UnitTests.APIClientTests.TestRetrieveProject_BadResponse" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+                          <test-case name="Grok.Numenta.UnitTests.APIClientTests.TestRetrieveProject_GoodResponse" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+                          <test-case name="Grok.Numenta.UnitTests.APIClientTests.TestRetrieveProjects_BadResponse" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+                          <test-case name="Grok.Numenta.UnitTests.APIClientTests.TestRetrieveProjects_GoodResponse" executed="True" result="Success" success="True" time="0.013" asserts="2" />
+                          <test-case name="Grok.Numenta.UnitTests.APIClientTests.TestRetrieveStream_BadResponse" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+                          <test-case name="Grok.Numenta.UnitTests.APIClientTests.TestRetrieveStream_GoodResponse" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+                          <test-case name="Grok.Numenta.UnitTests.APIClientTests.TestRetrieveSwarm_BadRequest" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+                          <test-case name="Grok.Numenta.UnitTests.APIClientTests.TestRetrieveSwarm_GoodRequest" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+                          <test-case name="Grok.Numenta.UnitTests.APIClientTests.TestSendModelCommand_BadRequest" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+                          <test-case name="Grok.Numenta.UnitTests.APIClientTests.TestSendModelCommand_GoodRequest" executed="True" result="Success" success="True" time="0.007" asserts="1" />
+                        </results>
+                      </test-suite>
+                      <test-suite type="TestFixture" name="DataSourceFieldTests" executed="True" result="Success" success="True" time="0.045" asserts="0">
+                        <results>
+                          <test-case name="Grok.Numenta.UnitTests.DataSourceFieldTests.TestConstructor_JSONInput" executed="True" result="Success" success="True" time="0.004" asserts="4" />
+                          <test-case name="Grok.Numenta.UnitTests.DataSourceFieldTests.TestConstructor_SingleStringInput" executed="True" result="Success" success="True" time="0.001" asserts="2" />
+                          <test-case name="Grok.Numenta.UnitTests.DataSourceFieldTests.TestConstructor_StringDoubleDoubleInput" executed="True" result="Success" success="True" time="0.004" asserts="5" />
+                          <test-case name="Grok.Numenta.UnitTests.DataSourceFieldTests.TestConstructor_StringStringInput" executed="True" result="Success" success="True" time="0.001" asserts="3" />
+                          <test-case name="Grok.Numenta.UnitTests.DataSourceFieldTests.TestConstructor_StringStringStringInput" executed="True" result="Success" success="True" time="0.001" asserts="3" />
+                          <test-case name="Grok.Numenta.UnitTests.DataSourceFieldTests.TestToJSON" executed="True" result="Success" success="True" time="0.020" asserts="6" />
+                        </results>
+                      </test-suite>
+                      <test-suite type="TestFixture" name="DataSourceTests" executed="True" result="Success" success="True" time="0.013" asserts="0">
+                        <results>
+                          <test-case name="Grok.Numenta.UnitTests.DataSourceTests.TestConstructor_JSONArrayInput" executed="True" result="Success" success="True" time="0.005" asserts="5" />
+                          <test-case name="Grok.Numenta.UnitTests.DataSourceTests.TestConstructor_SingleJSONInput" executed="True" result="Success" success="True" time="0.001" asserts="2" />
+                          <test-case name="Grok.Numenta.UnitTests.DataSourceTests.TestConstructor_SingleStringInput" executed="True" result="Success" success="True" time="0.001" asserts="2" />
+                          <test-case name="Grok.Numenta.UnitTests.DataSourceTests.TestConstructor_StringStringInput" executed="True" result="Success" success="True" time="0.000" asserts="2" />
+                        </results>
+                      </test-suite>
+                      <test-suite type="TestFixture" name="DataTableTests" executed="True" result="Success" success="True" time="0.036" asserts="0">
+                        <results>
+                          <test-case name="Grok.Numenta.UnitTests.DataTableTests.TestConstructor_2DStringArray" executed="True" result="Success" success="True" time="0.008" asserts="10" />
+                          <test-case name="Grok.Numenta.UnitTests.DataTableTests.TestConstructor_Default" executed="True" result="Success" success="True" time="0.000" asserts="2" />
+                          <test-case name="Grok.Numenta.UnitTests.DataTableTests.TestConstructor_JSONInput_ModelData" executed="True" result="Success" success="True" time="0.001" asserts="12" />
+                          <test-case name="Grok.Numenta.UnitTests.DataTableTests.TestConstructor_JSONInput_StreamData" executed="True" result="Success" success="True" time="0.001" asserts="12" />
+                          <test-case name="Grok.Numenta.UnitTests.DataTableTests.TestGetLastRowID_EmptyDataTable" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+                          <test-case name="Grok.Numenta.UnitTests.DataTableTests.TestGetLastRowID_InvalidDataTable" executed="True" result="Success" success="True" time="0.006" asserts="1" />
+                          <test-case name="Grok.Numenta.UnitTests.DataTableTests.TestGetLastRowID_PopulatedDataTable" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+                        </results>
+                      </test-suite>
+                      <test-suite type="TestFixture" name="ModelTests" executed="True" result="Success" success="True" time="0.043" asserts="0">
+                        <results>
+                          <test-case name="Grok.Numenta.UnitTests.ModelTests.TestCreateModel" executed="True" result="Success" success="True" time="0.028" asserts="12" />
+                          <test-case name="Grok.Numenta.UnitTests.ModelTests.TestToJSON" executed="True" result="Success" success="True" time="0.010" asserts="6" />
+                        </results>
+                      </test-suite>
+                      <test-suite type="TestFixture" name="ProjectTests" executed="True" result="Success" success="True" time="0.007" asserts="0">
+                        <results>
+                          <test-case name="Grok.Numenta.UnitTests.ProjectTests.TestCreateProject" executed="True" result="Success" success="True" time="0.001" asserts="8" />
+                          <test-case name="Grok.Numenta.UnitTests.ProjectTests.TestProjectToJSON" executed="True" result="Success" success="True" time="0.002" asserts="7" />
+                        </results>
+                      </test-suite>
+                      <test-suite type="TestFixture" name="StreamTests" executed="True" result="Success" success="True" time="0.008" asserts="0">
+                        <results>
+                          <test-case name="Grok.Numenta.UnitTests.StreamTests.TestCreateStream" executed="True" result="Success" success="True" time="0.003" asserts="15" />
+                          <test-case name="Grok.Numenta.UnitTests.StreamTests.TestToJSON_NewStreamForCreation" executed="True" result="Success" success="True" time="0.003" asserts="8" />
+                        </results>
+                      </test-suite>
+                      <test-suite type="TestFixture" name="SwarmTests" executed="True" result="Success" success="True" time="0.007" asserts="0">
+                        <results>
+                          <test-case name="Grok.Numenta.UnitTests.SwarmTests.TestCreateSwarm" executed="True" result="Success" success="True" time="0.007" asserts="9" />
+                        </results>
+                      </test-suite>
+                      <test-suite type="TestFixture" name="TimeAggregationTests" executed="True" result="Success" success="True" time="0.021" asserts="0">
+                        <results>
+                          <test-case name="Grok.Numenta.UnitTests.TimeAggregationTests.TestAddFieldOverride" executed="True" result="Success" success="True" time="0.002" asserts="3" />
+                          <test-case name="Grok.Numenta.UnitTests.TimeAggregationTests.TestConstructor_NoFieldOverrides" executed="True" result="Success" success="True" time="0.000" asserts="3" />
+                          <test-case name="Grok.Numenta.UnitTests.TimeAggregationTests.TestJSONConstructor_FieldOverrides" executed="True" result="Success" success="True" time="0.008" asserts="3" />
+                          <test-case name="Grok.Numenta.UnitTests.TimeAggregationTests.TestJSONConstructor_NoFieldOverrides" executed="True" result="Success" success="True" time="0.001" asserts="3" />
+                          <test-case name="Grok.Numenta.UnitTests.TimeAggregationTests.TestToJSON" executed="True" result="Success" success="True" time="0.001" asserts="3" />
+                        </results>
+                      </test-suite>
+                      <test-suite type="TestFixture" name="UploadEventTests" executed="True" result="Success" success="True" time="0.001" asserts="0">
+                        <results>
+                          <test-case name="Grok.Numenta.UnitTests.UploadEventTests.TestToString" executed="True" result="Success" success="True" time="0.000" asserts="5" />
+                        </results>
+                      </test-suite>
+                      <test-suite type="TestFixture" name="UserTests" executed="True" result="Success" success="True" time="0.018" asserts="0">
+                        <results>
+                          <test-case name="Grok.Numenta.UnitTests.UserTests.TestCreateUser" executed="True" result="Success" success="True" time="0.009" asserts="11" />
+                          <test-case name="Grok.Numenta.UnitTests.UserTests.TestUserToJSON" executed="True" result="Success" success="True" time="0.005" asserts="10" />
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

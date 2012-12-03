@@ -1,0 +1,51 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Grok.Numenta", "Grok.Numenta\Grok.Numenta.csproj", "{6C3A65FA-D696-4F06-B9A2-2171F8A84E20}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloGrok", "HelloGrok\HelloGrok.csproj", "{9C3CBE33-3776-406D-A658-FB0B81AB22C7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{17ADB1F4-329A-47A3-B37F-1870B3EE822A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Unit", "Unit", "{B7951AE7-7A1F-4986-A496-D7089C7ACA10}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Grok.Numenta.UnitTests", "Tests\Unit\Grok.Numenta.UnitTests\Grok.Numenta.UnitTests.csproj", "{90025C63-547C-4DF5-9918-13D6DB7337D8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Integration", "Integration", "{36582396-29DE-4AA4-B032-2FCB2AFDD122}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Grok.Numenta.IntegrationTests", "Tests\Integration\Grok.Numenta.IntegrationTests\Grok.Numenta.IntegrationTests.csproj", "{E2D715B8-FB01-4838-B6C0-8A4D764AC5D8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6C3A65FA-D696-4F06-B9A2-2171F8A84E20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C3A65FA-D696-4F06-B9A2-2171F8A84E20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C3A65FA-D696-4F06-B9A2-2171F8A84E20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C3A65FA-D696-4F06-B9A2-2171F8A84E20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C3A65FA-D696-4F06-B9A2-2171F8A84E20}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{9C3CBE33-3776-406D-A658-FB0B81AB22C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C3CBE33-3776-406D-A658-FB0B81AB22C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C3CBE33-3776-406D-A658-FB0B81AB22C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C3CBE33-3776-406D-A658-FB0B81AB22C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90025C63-547C-4DF5-9918-13D6DB7337D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90025C63-547C-4DF5-9918-13D6DB7337D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90025C63-547C-4DF5-9918-13D6DB7337D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90025C63-547C-4DF5-9918-13D6DB7337D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2D715B8-FB01-4838-B6C0-8A4D764AC5D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2D715B8-FB01-4838-B6C0-8A4D764AC5D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2D715B8-FB01-4838-B6C0-8A4D764AC5D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2D715B8-FB01-4838-B6C0-8A4D764AC5D8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B7951AE7-7A1F-4986-A496-D7089C7ACA10} = {17ADB1F4-329A-47A3-B37F-1870B3EE822A}
+		{36582396-29DE-4AA4-B032-2FCB2AFDD122} = {17ADB1F4-329A-47A3-B37F-1870B3EE822A}
+		{90025C63-547C-4DF5-9918-13D6DB7337D8} = {B7951AE7-7A1F-4986-A496-D7089C7ACA10}
+		{E2D715B8-FB01-4838-B6C0-8A4D764AC5D8} = {36582396-29DE-4AA4-B032-2FCB2AFDD122}
+	EndGlobalSection
+EndGlobal
