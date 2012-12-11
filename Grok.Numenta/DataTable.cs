@@ -52,6 +52,52 @@ namespace Grok.Numenta
             }
             set { _Data = value; }
         }
+
+        /// <summary>
+        /// Author: Jared Casner
+        /// Last Updated: 05 December 2012
+        /// Method: [string Key]
+        /// Description: Returns a List representing a data column for the index of a specific key value
+        /// </summary>
+        /// <param name="Key"></param>
+        /// <returns></returns>
+        public List<string> this[string Key]
+        {
+            get
+            {
+                int Index = Names.IndexOf(Key);
+                List<string> DataColumn = new List<string>();
+                return this[Index];
+            }
+        }
+
+        /// <summary>
+        /// Author: Jared Casner
+        /// Last Updated: 05 December 2012
+        /// Method: [int Index]
+        /// Description: Returns a List representing a data column for the index
+        /// </summary>
+        /// <param name="Index"></param>
+        /// <returns></returns>
+        public List<string> this[int Index]
+        {
+            get
+            {
+                List<string> DataColumn = new List<string>();
+
+                //if not found, throw an exception
+                if (Index == -1 || Data == null || Data[0].Length - 1 < Index)
+                    throw new KeyNotFoundException();
+                else
+                {
+                    foreach (string[] sArray in Data)
+                    {
+                        DataColumn.Add(sArray[Index]);
+                    }
+                }
+                return DataColumn;
+            }
+        }
         #endregion Accessors
         #endregion Members and Accessors
 

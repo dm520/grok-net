@@ -7,6 +7,7 @@
 //  without explicit written authorization from Numenta Inc.
 // ----------------------------------------------------------------------
 using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 
 using Newtonsoft.Json.Linq;
@@ -120,6 +121,50 @@ namespace Grok.Numenta.UnitTests
             DataTable DTUnderTest = new DataTable(recordsToStream);
 
             Assert.AreEqual(DTUnderTest.GetLastRowId(), 0);
+        }
+
+        [Test]
+        public void TestCustomAccessor_KeyValue_Exists()
+        {
+            JObject JSONObject = JObject.Parse(_InputJSON);
+
+            DataTable DTUnderTest = new DataTable(JSONObject);
+
+            Assert.AreEqual(DTUnderTest["ROWID"][0], "0");
+            Assert.AreEqual(DTUnderTest["timestamp"][1], "2010-10-01 00:15:00.000000");
+            Assert.AreEqual(DTUnderTest["consumption"][2], "5.9");
+        }
+
+        [Test]
+        public void TestCustomAccessor_IndexValue_Exists()
+        {
+            JObject JSONObject = JObject.Parse(_InputJSON);
+
+            DataTable DTUnderTest = new DataTable(JSONObject);
+
+            Assert.AreEqual(DTUnderTest[0][0], "0");
+            Assert.AreEqual(DTUnderTest[1][1], "2010-10-01 00:15:00.000000");
+            Assert.AreEqual(DTUnderTest[2][2], "5.9");
+        }
+
+        [Test]
+        public void TestCustomAccessor_KeyValue_DoesntExist()
+        {
+            JObject JSONObject = JObject.Parse(_InputJSON);
+
+            DataTable DTUnderTest = new DataTable(JSONObject);
+
+            Assert.Throws<KeyNotFoundException>(delegate { List<string> Test = DTUnderTest["KeyNotFound"]; });
+        }
+
+        [Test]
+        public void TestCustomAccessor_IndexValue_DoesntExist()
+        {
+            JObject JSONObject = JObject.Parse(_InputJSON);
+
+            DataTable DTUnderTest = new DataTable(JSONObject);
+
+            Assert.Throws<KeyNotFoundException>(delegate { List<string> Test = DTUnderTest[4]; });
         }
 
         private static string _TestData = @"""data"": [

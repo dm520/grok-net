@@ -3,3 +3,6 @@ bin/
 obj/
 TestBench/
 *.vshost.*
+*.VisualState.*
+TestResult.xml
+SwarmOutput.csv

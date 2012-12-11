@@ -134,7 +134,7 @@ namespace Grok.Numenta
         #region HTTP Calls
         /// <summary>
         /// Author: Jared Casner
-        /// Last Updated: 20 November, 2012
+        /// Last Updated: 11 December, 2012
         /// Method: Get
         /// Description: Makes an HTTP GET Call to the specified URL
         /// </summary>
@@ -142,55 +142,70 @@ namespace Grok.Numenta
         /// <returns></returns>
         protected virtual HttpResponseMessage Get(string URL) 
         {
-		    try 
-            {
-                if (!URL.ToUpper().StartsWith("HTTP"))
-                    URL = NumentaURI + URL;
-                HttpResponseMessage response = _HttpClient.GetAsync(URL).Result;
+            if (!URL.ToUpper().StartsWith("HTTP"))
+                URL = NumentaURI + URL;
+            HttpResponseMessage response = _HttpClient.GetAsync(URL).Result;
 
-                if (response.IsSuccessStatusCode)
-                {
-                    return response;
-                }
-                else
-                {
-                    throw new IOException("Failed to connect to " + NumentaURI + " with error " + (int)response.StatusCode + response.ReasonPhrase);
-                }
-		    } 
-            catch (IOException ex) 
+            if (response.IsSuccessStatusCode)
             {
-			    throw new APIException("Failed to retrieve data from " + URL, ex);
-		    }
+                return response;
+            }
+            else
+            {
+                throw new IOException("Failed to connect to " + NumentaURI + " with error " + (int)response.StatusCode + response.ReasonPhrase);
+            }
 	    }
 
         /// <summary>
         /// Author: Jared Casner
-        /// Last Updated: 20 November, 2012
+        /// Last Updated: 11 December, 2012
+        /// Method: PostJSONObject
+        /// Description: Makes an HTTP GET Call to the specified URL to return some JSON
+        /// </summary>
+        /// <param name="URL"></param>
+        /// <returns></returns>
+        protected virtual JObject GetJSONObject(string URL)
+        {
+            return JObject.Parse(Get(URL).Content.ReadAsStringAsync().Result);
+        }
+
+        /// <summary>
+        /// Author: Jared Casner
+        /// Last Updated: 11 December, 2012
         /// Method: PostJSONObject
         /// Description: Makes an HTTP POST Call to the specified URL with an attached JSON object
         /// </summary>
         /// <param name="URL">Either an absolute or a relative URL</param>
         /// <param name="Data"></param>
         /// <returns></returns>
-        protected virtual HttpResponseMessage PostJSONObject(string URL, JObject JSONObject)
+        protected virtual JObject PostJSONObject(string URL, JObject JSONObject)
         {
-            try
-            {
-                StringContent PutContent = new StringContent(JSONObject.ToString(), Encoding.UTF8, "application/json");
-                HttpResponseMessage response = _HttpClient.PostAsync(URL, PutContent).Result;
+            return JObject.Parse(Post(URL, JSONObject.ToString()).Content.ReadAsStringAsync().Result); 
+        }
 
-                if (response.IsSuccessStatusCode)
-                {
-                    return response;
-                }
-                else
-                {
-                    throw new IOException("Failed to connect to " + NumentaURI + " with error " + (int)response.StatusCode + response.ReasonPhrase);
-                }
-            }
-            catch (IOException ex)
+        /// <summary>
+        /// Author: Jared Casner
+        /// Last Updated: 11 December, 2012
+        /// Method: PostJSONObject
+        /// Description: Makes an HTTP POST Call to the specified URL with a payload, which is
+        /// assumed to be in a JSON format
+        /// </summary>
+        /// <param name="URL">Either an absolute or a relative URL</param>
+        /// <param name="Data"></param>
+        /// <returns></returns>
+        protected virtual HttpResponseMessage Post(string URL, string Data)
+        {
+            StringContent PutContent = new StringContent(Data, Encoding.UTF8, "application/json");
+            HttpResponseMessage response = _HttpClient.PostAsync(URL, PutContent).Result;
+
+            if (response.IsSuccessStatusCode)
             {
-                throw new APIException("Failed to POST data: " + JSONObject.ToString(), ex);
+                return response;
+            }
+            else
+            {
+                throw new IOException("Failed to connect to " + NumentaURI + " with error " + 
+                    (int)response.StatusCode + ":" + response.ReasonPhrase);
             }
         }
 
@@ -252,7 +267,7 @@ namespace Grok.Numenta
         #region User Methods
         /// <summary>
         /// Author: Jared Casner
-        /// Last Updated: 20 November, 2012
+        /// Last Updated: 11 December, 2012
         /// Method: RetrieveUsers
         /// Description: retrieves a list of users
 	    /// </summary>
@@ -261,10 +276,7 @@ namespace Grok.Numenta
         {
             try
             {
-                HttpResponseMessage response = Get(_Version + "/users");
-
-                //get the users
-                JObject JSONResponse = JObject.Parse(response.Content.ReadAsStringAsync().Result);
+                JObject JSONResponse = GetJSONObject(_Version + "/users");
 
                 //deserialize into a list
                 List<User> UserList = JsonConvert.DeserializeObject<List<User>>(JSONResponse["users"].ToString());
@@ -279,7 +291,7 @@ namespace Grok.Numenta
             }
             catch (Exception ex)
             {
-                throw new APIException("Failed to extract the list of users", ex);
+                throw new APIException("Failed to extract the list of users: " + ex.Message, ex);
             }
         }
 
@@ -302,7 +314,7 @@ namespace Grok.Numenta
 
         /// <summary>
         /// Author: Jared Casner
-        /// Last Updated: 20 November, 2012
+        /// Last Updated: 11 December, 2012
         /// Method: UpdateUser
         /// Description: The API expects a JSON Array, so we need to handle that appropriately before serializing
         /// </summary>
@@ -312,9 +324,7 @@ namespace Grok.Numenta
         {
             try
             {
-                HttpResponseMessage response = PostJSONObject(SingleUser.url, SingleUser.ToJSON());
-
-                JObject JSONResponse = JObject.Parse(response.Content.ReadAsStringAsync().Result);
+                JObject JSONResponse = PostJSONObject(SingleUser.url, SingleUser.ToJSON());
 
                 return User.CreateUser(this, JSONResponse);
             }
@@ -328,7 +338,7 @@ namespace Grok.Numenta
         #region Project Methods
         /// <summary>
         /// Author: Jared Casner
-        /// Last Updated: 20 November, 2012
+        /// Last Updated: 11 December, 2012
         /// Method: CreateProject
         /// Description: Calls the API to create a new Project 
         /// </summary>
@@ -339,9 +349,7 @@ namespace Grok.Numenta
         {
             try
             {
-                HttpResponseMessage response = PostJSONObject(URL, NewProject.ToJSON());
-
-                JObject JSONResponse = JObject.Parse(response.Content.ReadAsStringAsync().Result);
+                JObject JSONResponse = PostJSONObject(URL, NewProject.ToJSON());
 
                 return Project.CreateProject(this, JSONResponse);
             }
@@ -393,7 +401,7 @@ namespace Grok.Numenta
 
         /// <summary>
         /// Author: Jared Casner
-        /// Last Updated: 20 November, 2012
+        /// Last Updated: 11 December, 2012
         /// Method: RetrieveProjects
         /// Description: Calls the API to retrieve a list of Projects 
         /// </summary>
@@ -403,10 +411,8 @@ namespace Grok.Numenta
         {
             try
             {
-                HttpResponseMessage response = Get(URL);
-
                 //get the projects
-                JObject JSONResponse = JObject.Parse(response.Content.ReadAsStringAsync().Result);
+                JObject JSONResponse = GetJSONObject(URL);
 
                 //deserialize into a list
                 List<Project> ProjectList = JsonConvert.DeserializeObject<List<Project>>(JSONResponse["projects"].ToString());
@@ -427,7 +433,7 @@ namespace Grok.Numenta
 
         /// <summary>
         /// Author: Jared Casner
-        /// Last Updated: 20 November, 2012
+        /// Last Updated: 11 December, 2012
         /// Method: RetrieveProject
         /// Description: Calls the API to retrieve a specific Project
         /// </summary>
@@ -437,12 +443,7 @@ namespace Grok.Numenta
         {
             try
             {
-                HttpResponseMessage response = Get(URL);
-
-                //get the projects
-                JObject JSONResponse = JObject.Parse(response.Content.ReadAsStringAsync().Result);
-                
-                return Project.CreateProject(this, JSONResponse);
+                return Project.CreateProject(this, GetJSONObject(URL));
             }
             catch (Exception ex)
             {
@@ -499,7 +500,7 @@ namespace Grok.Numenta
         #region Stream Methods
         /// <summary>
         /// Author: Jared Casner
-        /// Last Updated: 20 November, 2012
+        /// Last Updated: 11 December, 2012
         /// Method: CreateStream
         /// Description: Calls the API to create a Stream
         /// </summary>
@@ -510,9 +511,7 @@ namespace Grok.Numenta
         {
             try
             {
-                HttpResponseMessage response = PostJSONObject(URL, NewStream.ToJSON());
-
-                JObject JSONResponse = JObject.Parse(response.Content.ReadAsStringAsync().Result);
+                JObject JSONResponse = PostJSONObject(URL, NewStream.ToJSON());
 
                 return Stream.CreateStream(this, JSONResponse);
             }
@@ -537,7 +536,7 @@ namespace Grok.Numenta
 
         /// <summary>
         /// Author: Jared Casner
-        /// Last Updated: 20 November, 2012
+        /// Last Updated: 11 December, 2012
         /// Method: RetrieveStreams
         /// Description: Calls the API to retrieve a list of Streams
         /// </summary>
@@ -547,10 +546,7 @@ namespace Grok.Numenta
         {
             try
             {
-                HttpResponseMessage response = Get(URL);
-
-                //get the projects
-                JObject JSONResponse = JObject.Parse(response.Content.ReadAsStringAsync().Result);
+                JObject JSONResponse = GetJSONObject(URL);
 
                 //deserialize into a list
                 List<Stream> StreamList = JsonConvert.DeserializeObject<List<Stream>>(JSONResponse["streams"].ToString());
@@ -570,7 +566,7 @@ namespace Grok.Numenta
 
         /// <summary>
         /// Author: Jared Casner
-        /// Last Updated: 20 November, 2012
+        /// Last Updated: 11 December, 2012
         /// Method: RetrieveStream
         /// Description: Calls the API to retrieve a specific Stream
         /// </summary>
@@ -580,12 +576,7 @@ namespace Grok.Numenta
         {
             try
             {
-                HttpResponseMessage response = Get(URL);
-
-                //get the projects
-                JObject JSONResponse = JObject.Parse(response.Content.ReadAsStringAsync().Result);
-
-                return Stream.CreateStream(this, JSONResponse);
+                return Stream.CreateStream(this, GetJSONObject(URL));
             }
             catch (Exception ex)
             {
@@ -609,7 +600,7 @@ namespace Grok.Numenta
 
         /// <summary>
         /// Author: Jared Casner
-        /// Last Updated: 20 November, 2012
+        /// Last Updated: 11 December, 2012
         /// Method: AppendData
         /// Description: Calls the API to append data to a Stream
         /// </summary>
@@ -639,7 +630,7 @@ namespace Grok.Numenta
                     JObject request = new JObject();
                     request.Add("input", new JArray(jsonList));
 
-                    HttpResponseMessage response = PostJSONObject(URL, request);
+                    PostJSONObject(URL, request);
 
                     if (Callback != null)
                     {
@@ -707,7 +698,7 @@ namespace Grok.Numenta
         #region Swarm Methods
         /// <summary>
         /// Author: Jared Casner
-        /// Last Updated: 20 November, 2012
+        /// Last Updated: 11 December, 2012
         /// Method: RetrieveSwarm
         /// Description: Calls the API to retrieve a specific Swarm
         /// </summary>
@@ -717,22 +708,17 @@ namespace Grok.Numenta
         {
             try
             {
-                HttpResponseMessage response = Get(URL);
-
-                //get the projects
-                JObject JSONResponse = JObject.Parse(response.Content.ReadAsStringAsync().Result);
-
-                return Swarm.CreateSwarm(this, JSONResponse);
+                return Swarm.CreateSwarm(this, GetJSONObject(URL));
             }
             catch (Exception ex)
             {
-                throw new APIException("Failed to retrieve stream " + URL, ex);
+                throw new APIException("Failed to retrieve swarm " + URL, ex);
             }
         }
 
         /// <summary>
         /// Author: Jared Casner
-        /// Last Updated: 20 November, 2012
+        /// Last Updated: 11 December, 2012
         /// Method: CreateSwarm
         /// Description: Calls the API to create a Swarm
         /// </summary>
@@ -742,9 +728,7 @@ namespace Grok.Numenta
         {
             try
             {
-                HttpResponseMessage response = PostJSONObject(URL, new JObject());
-
-                JObject JSONResponse = JObject.Parse(response.Content.ReadAsStringAsync().Result);
+                JObject JSONResponse = PostJSONObject(URL, new JObject());
 
                 return Swarm.CreateSwarm(this, JSONResponse);
             }
@@ -790,7 +774,7 @@ namespace Grok.Numenta
         #region Model Methods
         /// <summary>
         /// Author: Jared Casner
-        /// Last Updated: 20 November, 2012
+        /// Last Updated: 11 December, 2012
         /// Method: SendModelCommand
         /// Description: Calls the API to send a command for a Model
         /// </summary>
@@ -808,11 +792,7 @@ namespace Grok.Numenta
 			    if (Parameters != null) 
 				    request.Add("params", Parameters);
 			
-			    HttpResponseMessage response = PostJSONObject(URL, request);
-                
-                JObject JSONResponse = JObject.Parse(response.Content.ReadAsStringAsync().Result);
-			
-			    return JSONResponse;
+			    return PostJSONObject(URL, request);
 		    } 
             catch (Exception ex) 
             {
@@ -897,7 +877,7 @@ namespace Grok.Numenta
 
         /// <summary>
         /// Author: Jared Casner
-        /// Last Updated: 20 November, 2012
+        /// Last Updated: 11 December, 2012
         /// Method: RetrieveOutputData
         /// Description: Calls the API to retrieve output data for a Model
         /// </summary>
@@ -907,9 +887,7 @@ namespace Grok.Numenta
         {
             try
             {
-                HttpResponseMessage response = Get(URL);
-                                
-                return new DataTable(JObject.Parse(response.Content.ReadAsStringAsync().Result));
+                return new DataTable(GetJSONObject(URL));
             }
             catch (Exception ex)
             {
@@ -919,7 +897,7 @@ namespace Grok.Numenta
 
         /// <summary>
         /// Author: Jared Casner
-        /// Last Updated: 20 November, 2012
+        /// Last Updated: 11 December, 2012
         /// Method: CreateModel
         /// Description: Calls the API to create a new Model
         /// </summary>
@@ -930,15 +908,13 @@ namespace Grok.Numenta
         {
             try
             {
-                HttpResponseMessage response = PostJSONObject(URL, NewModel.ToJSON());
-
-                JObject JSONResponse = JObject.Parse(response.Content.ReadAsStringAsync().Result);
+                JObject JSONResponse = PostJSONObject(URL, NewModel.ToJSON());
 
                 return Model.CreateModel(this, JSONResponse);
             }
             catch (Exception e)
             {
-                throw new APIException("Failed to create the model", e);
+                throw new APIException("Failed to create the model: " + e.Message, e);
             }
         }
 
@@ -957,7 +933,7 @@ namespace Grok.Numenta
 
         /// <summary>
         /// Author: Jared Casner
-        /// Last Updated: 20 November, 2012
+        /// Last Updated: 11 December, 2012
         /// Method: RetrieveModels
         /// Description: Calls the API to retrieve a list of Model
         /// </summary>
@@ -967,16 +943,13 @@ namespace Grok.Numenta
         {
             try
             {
-                HttpResponseMessage response = Get(URL);
-
-                //get the projects
-                JObject JSONResponse = JObject.Parse(response.Content.ReadAsStringAsync().Result);
+                JObject JSONResponse = GetJSONObject(URL);
 
                 //deserialize into a list
                 List<Model> ModelList = JsonConvert.DeserializeObject<List<Model>>(JSONResponse["models"].ToString());
 
-                //since we're just deserializing directly into project objects, we need to ensure that the API Client
-                //is set on each project
+                //since we're just deserializing directly into model objects, we need to ensure that the API Client
+                //is set on each model
                 foreach (Model CurrentModel in ModelList)
                     CurrentModel.ModelAPIClient = this;
 
@@ -991,7 +964,7 @@ namespace Grok.Numenta
 
         /// <summary>
         /// Author: Jared Casner
-        /// Last Updated: 20 November, 2012
+        /// Last Updated: 11 December, 2012
         /// Method: RetrieveModel
         /// Description: Calls the API to retrieve a specific Model
         /// </summary>
@@ -1001,12 +974,7 @@ namespace Grok.Numenta
         {
             try
             {
-                HttpResponseMessage response = Get(URL);
-
-                //get the projects
-                JObject JSONResponse = JObject.Parse(response.Content.ReadAsStringAsync().Result);
-
-                return Model.CreateModel(this, JSONResponse);
+                return Model.CreateModel(this, GetJSONObject(URL));
             }
             catch (Exception ex)
             {
