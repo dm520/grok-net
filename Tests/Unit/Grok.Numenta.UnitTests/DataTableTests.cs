@@ -46,6 +46,17 @@ namespace Grok.Numenta.UnitTests
         }
 
         [Test]
+        public void TestConstructor_EmptyJSONInput_ModelData()
+        {
+            JObject JSONObject = JObject.Parse(_EmptyDataJSON);
+
+            DataTable DTUnderTest = new DataTable(JSONObject);
+
+            Assert.IsEmpty(DTUnderTest.Names);
+            Assert.IsEmpty(DTUnderTest.Data);
+        }
+
+        [Test]
         public void TestConstructor_JSONInput_StreamData()
         {
             JObject JSONObject = JObject.Parse(_InputJSON);
@@ -166,7 +177,15 @@ namespace Grok.Numenta.UnitTests
 
             Assert.Throws<KeyNotFoundException>(delegate { List<string> Test = DTUnderTest[4]; });
         }
-
+        [Test]
+        public void TestMetaPropertiesAccess()
+        {
+            JObject JSONObject = JObject.Parse(_OutputJSON);
+            DataTable DTUnderTest = new DataTable(JSONObject);
+            Assert.AreEqual(1, DTUnderTest.TimestampIndex);
+            Assert.AreEqual(2, DTUnderTest.PredictedFieldIndex);
+            Assert.AreEqual(7, DTUnderTest.PredictionFieldIndex);
+        }
         private static string _TestData = @"""data"": [
                                               [
                                                 0, 
@@ -220,5 +239,16 @@ namespace Grok.Numenta.UnitTests
                                                 }, " + _TestData + @" },
                                               ""ok"": true
                                             }";
+
+        private static string _EmptyDataJSON = @"{""output"": {
+                                                  ""meta"": {
+                                                    ""engineModelId"": 53780, 
+                                                    ""engineJobId"": 1408, 
+                                                    ""predictedFieldPredictionIndex"": -1, 
+                                                    ""modelStatus"": ""running"", 
+                                                    ""predictedFieldIndex"": -1
+                                                   }, ""data"": [], ""names"": []}, 
+                                                 ""ok"": true
+                                                }";
     }
 }

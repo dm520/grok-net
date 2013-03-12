@@ -18,8 +18,9 @@ namespace HelloGrok
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Please enter 1 to run the initial HelloGrok application");
+            Console.WriteLine("Please enter 1 to run the initial HelloGrok application,");
             Console.WriteLine("Or, press 2 to run Hello Grok Part 2");
+            Console.WriteLine("Or, press 3 to run Hello Anomaly");
             string Input = Console.ReadLine();
             bool Continue = true;
 
@@ -33,6 +34,10 @@ namespace HelloGrok
                 case "2":
                     Continue = false;
                     HelloGrokPart2.RunHelloGrokPart2();
+                    break;
+                case "3":
+                    HelloAnomaly.RunHelloAnomaly();
+                    Continue = false;
                     break;
                 default:
                     Console.WriteLine("Invalid input, please try again.");

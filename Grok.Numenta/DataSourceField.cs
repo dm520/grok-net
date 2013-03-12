@@ -17,7 +17,7 @@ namespace Grok.Numenta
 {
     /// <summary>
     /// Author: Jared Casner
-    /// Last Updated: 19 November 2012
+    /// Last Updated: 18 December 2012
     /// Class: DataSourceField
     /// Description: Represents a single field in the DataSources of a Stream.
     /// </summary>
@@ -89,7 +89,7 @@ namespace Grok.Numenta
                 else
                     return (double)_Max; 
             }
-            set { _Max = (double)value; }
+            set { _Max = Convert.ToDouble(value); }
         }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
@@ -102,7 +102,7 @@ namespace Grok.Numenta
                 else
                     return (double)_Min;
             }
-            set { _Min = (double)value; }
+            set { _Min = Convert.ToDouble(value); }
         }
         #endregion Accessors
         #endregion Members and Accessors

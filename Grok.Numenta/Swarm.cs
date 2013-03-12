@@ -35,6 +35,7 @@ namespace Grok.Numenta
         private string _URL;
         private string _Status;
         private JObject _Details;
+        private int _Expires = 0;
         #endregion Member Variables
 
         #region Accessors
@@ -44,7 +45,16 @@ namespace Grok.Numenta
             get { return _Client; }
             set { _Client = value; }
         }
-
+        /// <summary>
+        /// While the swarn is running, return the number of seconds to wait before
+        /// checking if the swarm process is complete. Default value:0
+        /// </summary>
+        [JsonIgnore]
+        public int Expires
+        {
+            get { return _Expires; }
+            set { _Expires = value; }
+        }
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string id
         {
@@ -86,7 +96,7 @@ namespace Grok.Numenta
 
         /// <summary>
         ///  Author: Jared Casner
-        /// Last Updated: 19 November 2012
+        /// Last Updated: 20 December 2012
         /// Method: CreateSwarm
         /// Description: Deserialize a JSON Object from the API into a Swarm object
         /// </summary>
@@ -97,8 +107,19 @@ namespace Grok.Numenta
         {
             try
             {
-                Swarm NewSwarm = JsonConvert.DeserializeObject<Swarm>(JSONObject["swarm"].ToString());
+                string key = string.Empty;
+                Swarm NewSwarm = new Swarm();
+                if (((JProperty)JSONObject.First).Name.Equals("swarm"))
+                    NewSwarm = JsonConvert.DeserializeObject<Swarm>(JSONObject["swarm"].ToString());
+                else 
+                    NewSwarm = JsonConvert.DeserializeObject<List<Swarm>>(JSONObject["swarms"].ToString())[0];
+                
                 NewSwarm.SwarmAPIClient = Client;
+                JToken expire = JSONObject.GetValue("Expires");
+                if (expire != null)
+                {
+                    NewSwarm.Expires = expire.Value<int>();
+                }
                 return NewSwarm;
             }
             catch (Exception ex)

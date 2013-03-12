@@ -1,0 +1,1614 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Grok.Numenta</name>
+    </assembly>
+    <members>
+        <member name="T:Grok.Numenta.APIClient">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 18 December, 2012
+            Class: APIClient
+            Description: Default API Client so that we can connect to Grok
+            </summary>
+        </member>
+        <member name="T:Grok.Numenta.IAPIClient">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 20 November, 2012
+            Interface: IAPIClient
+            Description: Interface for the API Client which allows us to be able to mock the API Client for testing purposes
+            </summary>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.#ctor(System.String)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 20 November, 2012
+            Method: APIClient
+            Description: Constructor taking the API Key of the User 
+            </summary>
+            <param name="UserAPIKey"></param>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.#ctor(System.String,System.String)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 26 November, 2012
+            Method: APIClient
+            Description: Constructor taking the API Key of the User and a base URL (e.g.: https://api.numenta.com)
+            </summary>
+            <param name="UserAPIKey"></param>
+            <param name="ConnectionURL"></param>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.Get(System.String)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 11 December, 2012
+            Method: Get
+            Description: Makes an HTTP GET Call to the specified URL
+            </summary>
+            <param name="URL">Either an absolute or a relative URL</param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.GetJSONObject(System.String)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 11 December, 2012
+            Method: PostJSONObject
+            Description: Makes an HTTP GET Call to the specified URL to return some JSON
+            </summary>
+            <param name="URL"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.PostJSONObject(System.String,Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 11 December, 2012
+            Method: PostJSONObject
+            Description: Makes an HTTP POST Call to the specified URL with an attached JSON object
+            </summary>
+            <param name="URL">Either an absolute or a relative URL</param>
+            <param name="Data"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.Post(System.String,System.String)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 11 December, 2012
+            Method: PostJSONObject
+            Description: Makes an HTTP POST Call to the specified URL with a payload, which is
+            assumed to be in a JSON format
+            </summary>
+            <param name="URL">Either an absolute or a relative URL</param>
+            <param name="Data"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.DeleteJSONObject(System.String)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 18 December, 2012
+            Method: DeleteJSONObject
+            Description: Deletes a resource at the specified URL.
+            </summary>
+            <param name="URL"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.Delete(System.String)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 26 November, 2012
+            Method: Delete
+            Description: Deletes the resource at the specified URL.
+            </summary>
+            <param name="url"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.RetrieveUsers">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 11 December, 2012
+            Method: RetrieveUsers
+            Description: retrieves a list of users
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.InitDefaultUser">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 20 November, 2012
+            Method: InitDefaultUser
+            Description: Initializes the default user.
+            Typically, the API key will only have access to one user account.
+            This method gets that user account.        
+            </summary>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.UpdateUser(Grok.Numenta.User)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 11 December, 2012
+            Method: UpdateUser
+            Description: The API expects a JSON Array, so we need to handle that appropriately before serializing
+            </summary>
+            <param name="SingleUser"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.CreateProject(System.String,Grok.Numenta.Project)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 11 December, 2012
+            Method: CreateProject
+            Description: Calls the API to create a new Project 
+            </summary>
+            <param name="URL"></param>
+            <param name="NewProject"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.CreateProject(Grok.Numenta.Project)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 20 November, 2012
+            Method: CreateProject
+            Description: Calls the API to create a new Project 
+            </summary>
+            <param name="NewProject"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.CreateProject(System.String)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 20 November, 2012
+            Method: CreateProject
+            Description: Calls the API to create a new Project 
+            </summary>
+            <param name="ProjectName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.RetrieveProjects">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 20 November, 2012
+            Method: RetrieveProjects
+            Description: Calls the API to retrieve a list of Projects 
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.RetrieveProjects(System.String)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 11 December, 2012
+            Method: RetrieveProjects
+            Description: Calls the API to retrieve a list of Projects 
+            </summary>
+            <param name="URL"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.RetrieveProject(System.String)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 11 December, 2012
+            Method: RetrieveProject
+            Description: Calls the API to retrieve a specific Project
+            </summary>
+            <param name="URL"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.RetrieveProject(Grok.Numenta.Project)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 20 November, 2012
+            Method: RetrieveProject
+            Description: Calls the API to retrieve a specific Project
+            </summary>
+            <param name="CurrentProject"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.DeleteProject(System.String)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 26 November, 2012
+            Method: DeleteProject
+            Description: Deletes the project at the specified URL
+            </summary>
+            <param name="URL"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.DeleteProject(Grok.Numenta.Project)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 26 November, 2012
+            Method: DeleteProject
+            Description: Deletes the project 
+            </summary>
+            <param name="project"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.CreateStream(System.String,Grok.Numenta.Stream)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 11 December, 2012
+            Method: CreateStream
+            Description: Calls the API to create a Stream
+            </summary>
+            <param name="URL"></param>
+            <param name="NewStream"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.CreateStream(Grok.Numenta.Stream)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 20 November, 2012
+            Method: CreateStream
+            Description: Calls the API to create a Stream
+            </summary>
+            <param name="NewStream"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.RetrieveStreams(System.String)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 11 December, 2012
+            Method: RetrieveStreams
+            Description: Calls the API to retrieve a list of Streams
+            </summary>
+            <param name="URL"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.RetrieveStream(System.String)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 11 December, 2012
+            Method: RetrieveStream
+            Description: Calls the API to retrieve a specific Stream
+            </summary>
+            <param name="URL"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.RetrieveStreamById(System.String)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 20 November, 2012
+            Method: RetrieveStreamById
+            Description: Calls the API to retrieve a list of Streams
+            </summary>
+            <param name="StreamID"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.AppendData(System.String,System.Collections.Generic.List{System.String[]},Grok.Numenta.UploadCallback)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 11 December, 2012
+            Method: AppendData
+            Description: Calls the API to append data to a Stream
+            </summary>
+            <param name="URL"></param>
+            <param name="Data"></param>
+            <param name="Callback"></param>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.AppendData(System.String,System.Collections.Generic.List{System.String[]})">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 20 November, 2012
+            Method: AppendData
+            Description: Calls the API to append data to a Stream
+            </summary>
+            <param name="URL"></param>
+            <param name="Data"></param>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.DeleteStream(System.String)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 26 November, 2012
+            Method: DeleteStream
+            Description: Deletes the Stream at the specified URL
+            </summary>
+            <param name="URL"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.DeleteStream(Grok.Numenta.Stream)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 26 November, 2012
+            Method: DeleteStream
+            Description: Deletes the Stream 
+            </summary>
+            <param name="StreamToDelete"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.RetrieveSwarm(System.String)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 11 December, 2012
+            Method: RetrieveSwarm
+            Description: Calls the API to retrieve a specific Swarm
+            </summary>
+            <param name="URL"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.CreateSwarm(System.String)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 11 December, 2012
+            Method: CreateSwarm
+            Description: Calls the API to create a Swarm
+            </summary>
+            <param name="URL"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.DeleteSwarm(System.String)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 26 November, 2012
+            Method: DeleteSwarm
+            Description: Deletes the Swarm at the specified URL
+            </summary>
+            <param name="URL"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.DeleteSwarm(Grok.Numenta.Swarm)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 26 November, 2012
+            Method: DeleteSwarm
+            Description: Deletes the Swarm 
+            </summary>
+            <param name="SwarmToDelete"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.SendModelCommand(System.String,System.String,Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 11 December, 2012
+            Method: SendModelCommand
+            Description: Calls the API to send a command for a Model
+            </summary>
+            <param name="URL"></param>
+            <param name="Command"></param>
+            <param name="Parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.SendModelCommand(System.String,System.String,System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 20 November, 2012
+            Method: SendModelCommand
+            Description: Calls the API to send a command for a Model
+            </summary>
+            <param name="URL"></param>
+            <param name="Command"></param>
+            <param name="Parameterss"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.SendModelCommand(System.String,System.String)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 20 November, 2012
+            Method: SendModelCommand
+            Description: Calls the API to send a command for a Model
+            </summary>
+            <param name="URL"></param>
+            <param name="Command"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.SendModelCommand(Grok.Numenta.Model,System.String,System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 20 November, 2012
+            Method: SendModelCommand
+            Description: Calls the API to send a command for a Model
+            </summary>
+            <param name="CurrentModel"></param>
+            <param name="Command"></param>
+            <param name="Parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.SendModelCommand(Grok.Numenta.Model,System.String)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 20 November, 2012
+            Method: SendModelCommand
+            Description: Calls the API to send a command for a Model
+            </summary>
+            <param name="CurrentModel"></param>
+            <param name="Command"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.RetrieveOutputData(System.String)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 11 December, 2012
+            Method: RetrieveOutputData
+            Description: Calls the API to retrieve output data for a Model
+            </summary>
+            <param name="URL"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.CreateModel(System.String,Grok.Numenta.Model)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 11 December, 2012
+            Method: CreateModel
+            Description: Calls the API to create a new Model
+            </summary>
+            <param name="URL"></param>
+            <param name="NewModel"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.CreateModel(Grok.Numenta.Model)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 20 November, 2012
+            Method: CreateModel
+            Description: Calls the API to create a new Model
+            </summary>
+            <param name="NewModel"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.RetrieveModels(System.String)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 11 December, 2012
+            Method: RetrieveModels
+            Description: Calls the API to retrieve a list of Model
+            </summary>
+            <param name="URL"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.RetrieveModel(System.String)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 11 December, 2012
+            Method: RetrieveModel
+            Description: Calls the API to retrieve a specific Model
+            </summary>
+            <param name="URL"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.RetrieveModelById(System.String)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 20 November, 2012
+            Method: RetrieveModelById
+            Description: Calls the API to retrieve a specific Model
+            </summary>
+            <param name="ID"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.DeleteModel(System.String)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 26 November, 2012
+            Method: DeleteModel
+            Description: Deletes the Model at the specified URL
+            </summary>
+            <param name="URL"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.DeleteModel(Grok.Numenta.Model)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 26 November, 2012
+            Method: DeleteModel
+            Description: Deletes the Model 
+            </summary>
+            <param name="ModelToDelete"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.APIClient.CloneModel(Grok.Numenta.Model)">
+            <summary>
+            Clone model based on the last checkpoint
+            </summary>
+            <param name="ModelToClone"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Grok.Numenta.APIClient.Retry">
+            <summary>
+            Number of times to try to connect to the API server in case of server error (500) 
+            or connection timeout error before throwing an exception.
+            Default value: 2
+            </summary>
+        </member>
+        <member name="P:Grok.Numenta.APIClient.RetryAter">
+            <summary>
+            The number of seconds to wait between retries.
+            Default value: 10
+            </summary>
+        </member>
+        <member name="P:Grok.Numenta.APIClient.Timeout">
+            <summary>
+            Number of seconds to wait for the API server response.
+            </summary>
+        </member>
+        <member name="T:Grok.Numenta.DataSource">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Class: DataSource
+            Description: Represents a DataSource in a Stream.
+            </summary>
+        </member>
+        <member name="F:Grok.Numenta.DataSource.TYPE_LOCAL">
+            A "local" data source represents direct input into the stream.
+            A stream must have one and only one local data source.
+        </member>
+        <member name="F:Grok.Numenta.DataSource.TYPE_PUBLIC">
+            A "public" data source represents one of the public data providers.
+            A stream can optionally have many data sources.
+        </member>
+        <member name="M:Grok.Numenta.DataSource.#ctor">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: DataSource
+            Description: Default Constructor
+            </summary>
+        </member>
+        <member name="M:Grok.Numenta.DataSource.#ctor(System.String)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: DataSource
+            Description: Creates a new LOCAL DataSource with the given name
+            </summary>
+            <param name="Name"></param>
+        </member>
+        <member name="M:Grok.Numenta.DataSource.#ctor(System.String,System.String)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: DataSource
+            Description: Creates a new DataSource with the given name and Type
+            </summary>
+            <param name="strName"></param>
+            <param name="strDataSourceType"></param>
+        </member>
+        <member name="M:Grok.Numenta.DataSource.#ctor(Grok.Numenta.IAPIClient,Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: DataSource
+            Description: Creates a new DataSource from a given JSON Object (e.g.: from the API)
+            </summary>
+            <param name="client"></param>
+            <param name="JSONObject"></param>
+        </member>
+        <member name="M:Grok.Numenta.DataSource.ToJSON">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: ToJSON
+            Description: Serializes the DataSource as JSON for use with the API
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Grok.Numenta.DataSourceField">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 18 December 2012
+            Class: DataSourceField
+            Description: Represents a single field in the DataSources of a Stream.
+            </summary>
+        </member>
+        <member name="M:Grok.Numenta.DataSourceField.#ctor">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: DataSourceField
+            Description: Default Constructor
+            </summary>
+        </member>
+        <member name="M:Grok.Numenta.DataSourceField.#ctor(System.String)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: DataSourceField
+            Description: Constructor for a new SCALAR field
+            </summary>
+            <param name="Name"></param>
+        </member>
+        <member name="M:Grok.Numenta.DataSourceField.#ctor(System.String,System.String)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: DataSourceField
+            Description: Constructor for a new field
+            </summary>
+            <param name="Name"></param>
+            <param name="DataType"></param>
+        </member>
+        <member name="M:Grok.Numenta.DataSourceField.#ctor(System.String,System.String,System.String)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: DataSourceField
+            Description: Constructor for a new field with a Flag
+            </summary>
+            <param name="Name"></param>
+            <param name="DataType"></param>
+            <param name="flag"></param>
+        </member>
+        <member name="M:Grok.Numenta.DataSourceField.#ctor(System.String,System.Double,System.Double)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: DataSourceField
+            Description: Constructor for a new SCALAR field with MIN and MAX values
+            </summary>
+            <param name="Name"></param>
+            <param name="Min"></param>
+            <param name="Max"></param>
+        </member>
+        <member name="M:Grok.Numenta.DataSourceField.#ctor(Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: DataSourceField
+            Description: Constructor for a new DataSourceField from a JSON Object (e.g.: from the API)
+            </summary>
+            <param name="JSONObject"></param>
+        </member>
+        <member name="M:Grok.Numenta.DataSourceField.ToJSON">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: ToJSON
+            Description: Returns a JSON representation of a DataSourceField for use in the API
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Grok.Numenta.DataTable">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 20 November 2012
+            Class: DataTable
+            Description: Represents a Grok DataTable as returned in the /data feeds
+            </summary>
+        </member>
+        <member name="M:Grok.Numenta.DataTable.#ctor(Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 20 November 2012
+            Method: DataTable
+            Description: Constructor that takes a JSON Object representing a DataTable
+            </summary>
+            <param name="JSONObject"></param>
+        </member>
+        <member name="M:Grok.Numenta.DataTable.#ctor(System.IO.FileInfo)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 20 November 2012
+            Method: DataTable
+            Description: Creates a new DataTable based on a CSV File
+            </summary>
+            <param name="InputFile"></param>
+        </member>
+        <member name="M:Grok.Numenta.DataTable.#ctor(System.IO.FileInfo,System.Boolean)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 20 November 2012
+            Method: DataTable
+            Description: Creates a new DataTable based on a CSV File
+            </summary>
+            <param name="InputFile"></param>
+            <param name="HasHeaders"></param>
+        </member>
+        <member name="M:Grok.Numenta.DataTable.#ctor(System.IO.FileInfo,System.Boolean,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="InputFile"></param>
+            <param name="HasHeaders"></param>
+            <param name="MaxRows"></param>
+        </member>
+        <member name="M:Grok.Numenta.DataTable.#ctor(System.IO.FileInfo,System.Boolean,System.Int32,System.Int32)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 December 2012
+            Method: DataTable
+            Description: Creates a new DataTable based on a CSV File
+            </summary>
+            <param name="InputFile"></param>
+            <param name="HasHeaders"></param>
+            <param name="MaxRows"></param>
+            <param name="SkipRows"></param>
+        </member>
+        <member name="M:Grok.Numenta.DataTable.#ctor(System.String[][])">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 20 November 2012
+            Method: DataTable
+            Description: Creates a new DataTable based on a 2-D string array
+            </summary>
+            <param name="InputData"></param>
+        </member>
+        <member name="M:Grok.Numenta.DataTable.#ctor">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 20 November 2012
+            Method: DataTable
+            Description: Creates an empty data table
+            </summary>
+        </member>
+        <member name="M:Grok.Numenta.DataTable.GetLastRowId">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 20 November 2012
+            Method: DataTable
+            Description: Gets the last row's ID.
+            Note: This assumes the Grok output format, where the first column is an integer identifier.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.DataTable.WriteCSV(System.IO.FileInfo)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 20 November 2012
+            Method: DataTable
+            Description: Writes the data table out to the specified file in CSV format.
+            </summary>
+            <param name="OutputFile"></param>
+        </member>
+        <member name="P:Grok.Numenta.DataTable.Item(System.String)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 05 December 2012
+            Method: [string Key]
+            Description: Returns a List representing a data column for the index of a specific key value
+            </summary>
+            <param name="Key"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Grok.Numenta.DataTable.Item(System.Int32)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 05 December 2012
+            Method: [int Index]
+            Description: Returns a List representing a data column for the index
+            </summary>
+            <param name="Index"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Grok.Numenta.DataTable.TimestampIndex">
+            <summary>
+            Contains the index of the field representing time for this DataTable. 
+            </summary>
+        </member>
+        <member name="P:Grok.Numenta.DataTable.PredictionFieldIndex">
+            <summary>
+            Contains the index of the field representing the Predicted Field Prediction value for this DataTable
+            </summary>
+        </member>
+        <member name="P:Grok.Numenta.DataTable.PredictedFieldIndex">
+            <summary>
+            Contains the index of the field representing the Predicted Field Actual value for this DataTable
+            </summary>
+        </member>
+        <member name="T:Grok.Numenta.Model">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 03 January 2013
+            Class: Model
+            Description: Represents a Grok Model
+            </summary>
+        </member>
+        <member name="M:Grok.Numenta.Model.CreateModel(Grok.Numenta.IAPIClient,Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: CreateModel
+            Description: Creates a Model from a JSON Object (e.g.: from the API)
+            </summary>
+            <param name="Client"></param>
+            <param name="JSONObject"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.Model.#ctor">
+            <summary>
+            Create a prediction model
+            </summary>
+        </member>
+        <member name="M:Grok.Numenta.Model.#ctor(System.String)">
+            <summary>
+            Creates a model
+            </summary>
+            <param name="type">TYPE_ANOMALY or TYPE_PREDICTOR</param>
+        </member>
+        <member name="M:Grok.Numenta.Model.SetAnomalyThreshold(System.Double)">
+            <summary>
+            This method sets the threshold used for automatic classification. 
+            If different from current setting, it will recalculate all classifications within the anomaly cache. 
+            If it is set above 1.0, it will not classify anything.  
+            </summary>
+            <param name="threshold">the value to set the automatic classification threshold to</param>
+        </member>
+        <member name="M:Grok.Numenta.Model.GetAnomalyThreshold">
+            <summary>
+            This method returns the threshold used for automatic classification
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.Model.AddLabel(System.Int32,System.Int32,System.String)">
+            <summary>
+            This method adds the label ‘labelName’ to each point within the range [startRecord, endRecord].
+            </summary>
+            <param name="startRecord"></param>
+            <param name="endRecord"></param>
+            <param name="labelName"></param>
+        </member>
+        <member name="M:Grok.Numenta.Model.GetLabels(System.Int32,System.Int32)">
+            <summary>
+            This method returns the labels of a range of records. 
+            </summary>
+            <param name="startRecord"></param>
+            <param name="endRecord"></param>
+            <returns>
+            A dictionary mapping each record to a list of labels associated with that record
+            or an empty dictionary if the model is still re-processing the newly added labels.
+            </returns>
+        </member>
+        <member name="M:Grok.Numenta.Model.RemoveLabels(System.Int32,System.Int32,System.String)">
+            <summary>
+            This method removes labels from a range of records
+            </summary>
+            <param name="startRecord"></param>
+            <param name="endRecord"></param>
+            <param name="labelFilter"></param>
+        </member>
+        <member name="M:Grok.Numenta.Model.CreateSwarm">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: CreateSwarm
+            Description: Creates a Swarm for the Model
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.Model.SwarmModel(Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: CreateSwarm
+            Description: Sends a command to the API to start swarming the model and return the given Swarm
+            </summary>
+            <param name="ParamsToSwarmOn"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.Model.SwarmModel(System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: CreateSwarm
+            Description: Sends a command to the API to start swarming the model and return the given Swarm
+            </summary>
+            <param name="ParamsToSwarmOn"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.Model.SwarmModel(System.String)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: CreateSwarm
+            Description: Sends a command to the API to start swarming the model and return the given Swarm
+            </summary>
+            <param name="SwarmSize"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.Model.SwarmModel">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: CreateSwarm
+            Description: Sends a command to the API to start swarming the model and return the given Swarm
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.Model.Promote">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: Promote
+            Description: Sends a command to the API to Promote the Model
+            </summary>
+        </member>
+        <member name="M:Grok.Numenta.Model.Promote(System.Boolean)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: Promote
+            Description: Sends a command to the API to Promote the Model
+            </summary>
+            <param name="verbose"></param>
+        </member>
+        <member name="M:Grok.Numenta.Model.StartPromote">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: Promote
+            Description: Sends a command to the API to Promote the Model
+            </summary>
+        </member>
+        <member name="M:Grok.Numenta.Model.Start">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: Start
+            Description: Sends a command to the API to Start the Model
+            </summary>
+        </member>
+        <member name="M:Grok.Numenta.Model.Stop">
+            <summary>
+            Sends a command to Stop the model
+            </summary>
+        </member>
+        <member name="M:Grok.Numenta.Model.Clone">
+            <summary>
+            Clone model based on the last checkpoint
+            </summary>
+            <returns>Cloned Model</returns>
+        </member>
+        <member name="M:Grok.Numenta.Model.DisableLearning">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: DisableLearning
+            Description: Sends a command to the API to Disable Learning in the Model
+            </summary>
+        </member>
+        <member name="M:Grok.Numenta.Model.EnableLearning">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: EnableLearning
+            Description: Sends a command to the API to enable learning in the Model
+            </summary>
+        </member>
+        <member name="M:Grok.Numenta.Model.WaitForStatus(System.String)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: WaitForStatus
+            Description: Pauses execution until the Model reaches a given status
+            </summary>
+            <param name="Status"></param>
+        </member>
+        <member name="M:Grok.Numenta.Model.WaitForStatus(System.String,System.Boolean)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: WaitForStatus
+            Description: Pauses execution until the Model reaches a given status
+            </summary>
+            <param name="Status"></param>
+            <param name="Verbose"></param>
+        </member>
+        <member name="M:Grok.Numenta.Model.WaitForRowId(System.Int32)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: WaitForRowId
+            Description: Pauses execution until the Model reaches a given Row ID
+            </summary>
+            <param name="RowId"></param>
+        </member>
+        <member name="M:Grok.Numenta.Model.WaitForRowId(System.Int32,System.Boolean)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: WaitForRowId
+            Description: Pauses execution until the Model reaches a given Row ID
+            </summary>
+            <param name="RowId"></param>
+            <param name="Verbose"></param>
+        </member>
+        <member name="M:Grok.Numenta.Model.WaitForStabilization">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: WaitForStabilization
+            Description: Pauses execution until the Model fully stabilizes
+            </summary>
+        </member>
+        <member name="M:Grok.Numenta.Model.WaitForStabilization(System.Boolean)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 03 January 2013
+            Method: WaitForStabilization
+            Description: Pauses execution until the Model fully stabilizes
+            </summary>
+            <param name="Verbose"></param>
+        </member>
+        <member name="M:Grok.Numenta.Model.RetrieveData">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: RetrieveData
+            Description: Retrieves the data from the Model
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.Model.RetrieveData(System.Int32)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: RetrieveData
+            Description: Retrieves the data from the Model, limiting the ouptut to a specified number of rows
+            </summary>
+            <param name="Limit"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.Model.RetrieveData(System.Boolean)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: RetrieveData
+            Description: Retrieves the data from the Model, shifting the output to have the predictions line up with the Actual values
+            </summary>
+            <param name="shift"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.Model.RetrieveData(System.Int32,System.Boolean)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: RetrieveData
+            Description: Retrieves the data from the Model, limiting the output and shifting the predictions to line up with the actuals
+            </summary>
+            <param name="Limit"></param>
+            <param name="Shift"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.Model.RetrieveData(System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: RetrieveData
+            Description: Retrieves the data from the Model, limiting the output and shifting the predictions to line up with the actuals, and starting from a specific Row ID (Offset)
+            </summary>
+            <param name="Offset"></param>
+            <param name="Limit"></param>
+            <param name="Shift"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.Model.BuildDataUrl(System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: BuildDataUrl
+            Description: Builds the Model Data URL from the model URL given the specified inputs
+            </summary>
+            <param name="Offset"></param>
+            <param name="Limit"></param>
+            <param name="Shift"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.Model.ToJSON">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: ToJSON
+            Description: Serialize the Model to JSON for use in the API
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Grok.Numenta.Model.predictionSteps">
+            <summary>
+            NOTE: This needs to be instantiated before setting; if it gets set to an empty value,
+            then the JSON representation will be invalid, causing an HTTP error when creating
+            a Model.  Therefore, it needs to be instantiated locally.
+            </summary>
+        </member>
+        <member name="P:Grok.Numenta.Model.customErrorMetric">
+            <summary>
+            NOTE: This needs to be instantiated before setting; if it gets set to an empty value,
+            then the JSON representation will be invalid, causing an HTTP error when creating
+            a Model.  Therefore, it needs to be instantiated locally.
+            </summary>
+        </member>
+        <member name="T:Grok.Numenta.Project">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Class: Project
+            Description: The <code>Project</code> class represents the Project object in the API, a logical 
+            means of grouping Models and Streams within a User account.
+            </summary>
+        </member>
+        <member name="M:Grok.Numenta.Project.CreateStream(Grok.Numenta.Stream)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: CreateStream
+            Description: Calls out to the API to create a new Stream in the Project from a given Stream object
+            </summary>
+            <param name="NewStream"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.Project.RetrieveStreams">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: RetrieveStreams
+            Description: Calls out to the API to retrieve a list of Streams in the Project
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.Project.CreateModel(Grok.Numenta.Model)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: CreateModel
+            Description: Calls out to the API to create a new Model in the Project from a given Model object
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.Project.RetrieveModels">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: RetrieveModels
+            Description: Calls out to the API to retrieve a list of Models in the Project
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.Project.CreateProject(Grok.Numenta.IAPIClient,Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: CreateStream
+            Description: Create a Project locally from a JSON representation (e.g.: as retrieved from the API)
+            </summary>
+            <param name="Client"></param>
+            <param name="JSONObject"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.Project.ToJSON">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: ToJSON
+            Description: Serialize the project object, wrapping it in a "project" group
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Grok.Numenta.Stream">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Class: Stream
+            Description: The <code>Stream</code> class represents a Stream.
+            It can be used to perform basic retrieval and update operations.
+            </summary>
+        </member>
+        <member name="M:Grok.Numenta.Stream.CreateStream(Grok.Numenta.IAPIClient,Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: CreateStream
+            Description: Create a Stream locally from a JSON Object
+            </summary>
+            <param name="Client"></param>
+            <param name="JSONObject"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.Stream.ToJSON">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: ToJSON
+            Description: Serialize the project object, wrapping it in a "stream" group
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.Stream.AppendData(System.Collections.Generic.List{System.String[]})">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: AppendData
+            Description: Append data records to an existing Stream
+            </summary>
+            <param name="data"></param>
+        </member>
+        <member name="M:Grok.Numenta.Stream.AppendData(System.Collections.Generic.List{System.String[]},Grok.Numenta.UploadCallback)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: AppendData
+            Description: Append data records to an existing Stream
+            </summary>
+            <param name="data"></param>
+            <param name="callback"></param>
+        </member>
+        <member name="M:Grok.Numenta.Stream.AppendData(Grok.Numenta.DataTable)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: AppendData
+            Description: Append data records to an existing Stream
+            </summary>
+            <param name="NewData"></param>
+        </member>
+        <member name="M:Grok.Numenta.Stream.AppendData(Grok.Numenta.DataTable,Grok.Numenta.UploadCallback)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: AppendData
+            Description: Append data records to an existing Stream
+            </summary>
+            <param name="NewData"></param>
+            <param name="callback"></param>
+        </member>
+        <member name="T:Grok.Numenta.Swarm">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Class: Swarm
+            Description: The <code>Swarm</code> class represents a Swarm.
+            It can be used to perform basic retrieval and update operations.
+            </summary>
+        </member>
+        <member name="M:Grok.Numenta.Swarm.#ctor">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: Swarm
+            Description: Default Constructor
+            </summary>
+        </member>
+        <member name="M:Grok.Numenta.Swarm.CreateSwarm(Grok.Numenta.IAPIClient,Newtonsoft.Json.Linq.JObject)">
+            <summary>
+             Author: Jared Casner
+            Last Updated: 20 December 2012
+            Method: CreateSwarm
+            Description: Deserialize a JSON Object from the API into a Swarm object
+            </summary>
+            <param name="Client"></param>
+            <param name="JSONObject"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.Swarm.Retrieve">
+            <summary>
+             Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: Retrieve
+            Description: Returns a Swarm from the API given the URL
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Grok.Numenta.Swarm.Expires">
+            <summary>
+            While the swarn is running, return the number of seconds to wait before
+            checking if the swarm process is complete. Default value:0
+            </summary>
+        </member>
+        <member name="T:Grok.Numenta.TimeAggregation">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Class: TimeAggregation
+            Description: The <code>Time Aggregation</code> class represents the Aggregation used in a given Model.
+            </summary>
+        </member>
+        <member name="F:Grok.Numenta.TimeAggregation.INTERVAL_SECONDS">
+            Aggregates input data into buckets of one second intervals.
+        </member>
+        <member name="F:Grok.Numenta.TimeAggregation.INTERVAL_MINUTES">
+            Aggregates input data into buckets of one minute intervals.
+        </member>
+        <member name="F:Grok.Numenta.TimeAggregation.INTERVAL_HOURS">
+            Aggregates input data into buckets of one hour intervals.
+        </member>
+        <member name="F:Grok.Numenta.TimeAggregation.INTERVAL_DAYS">
+            Aggregates input data into buckets of one day intervals.
+        </member>
+        <member name="F:Grok.Numenta.TimeAggregation.INTERVAL_WEEKS">
+            Aggregates input data into buckets of one week intervals.
+        </member>
+        <member name="F:Grok.Numenta.TimeAggregation.INTERVAL_MONTHS">
+            Aggregates input data into buckets of one month intervals.
+        </member>
+        <member name="F:Grok.Numenta.TimeAggregation.FUNCTION_SUM">
+            Aggregates input data using the sum of all values during
+            the interval.  This function can only be used with
+            <code>SCALAR</code> fields.
+        </member>
+        <member name="F:Grok.Numenta.TimeAggregation.FUNCTION_MEAN">
+            Aggregates input data using the average/mean of all values
+            during the interval.  This function can only be used with
+            <code>SCALAR</code> fields.
+        </member>
+        <member name="F:Grok.Numenta.TimeAggregation.FUNCTION_FIRST">
+            Aggregates input data using the first value during the interval.
+        </member>
+        <member name="F:Grok.Numenta.TimeAggregation.FUNCTION_LAST">
+            Aggregates input data using the last value during the interval.
+        </member>
+        <member name="F:Grok.Numenta.TimeAggregation.FUNCTION_MIN">
+            Aggregates input data using the minimum value during the interval.
+        </member>
+        <member name="F:Grok.Numenta.TimeAggregation.FUNCTION_MAX">
+            Aggregates input data using the maximum value during the interval.
+        </member>
+        <member name="M:Grok.Numenta.TimeAggregation.GetSeconds">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November, 2012
+            Method: GetSeconds
+            Description: Returns the number of seconds in the aggregation interval.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.TimeAggregation.SetSeconds(System.Int32)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November, 2012
+            Method: SetSeconds
+            Description: Sets the number of seconds in the aggregation interval.
+            </summary>
+            <param name="seconds"></param>
+        </member>
+        <member name="M:Grok.Numenta.TimeAggregation.GetMinutes">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November, 2012
+            Method: GetMinutes
+            Description: Returns the number of minutes in the aggregation interval.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.TimeAggregation.SetMinutes(System.Int32)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November, 2012
+            Method: SetMinutes
+            Description: Sets the number of minutes in the aggregation interval.
+            </summary>
+            <param name="minutes"></param>
+        </member>
+        <member name="M:Grok.Numenta.TimeAggregation.GetHours">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November, 2012
+            Method: GetHours
+            Description: Returns the number of hours in the aggregation interval.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.TimeAggregation.SetHours(System.Int32)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November, 2012
+            Method: SetHours
+            Description: Sets the number of hours in the aggregation interval.
+            </summary>
+            <param name="hours"></param>
+        </member>
+        <member name="M:Grok.Numenta.TimeAggregation.GetDays">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November, 2012
+            Method: GetDays
+            Description: Returns the number of days in the aggregation interval.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.TimeAggregation.SetDays(System.Int32)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November, 2012
+            Method: SetDays
+            Description: Sets the number of days in the aggregation interval.
+            </summary>
+            <param name="days"></param>
+        </member>
+        <member name="M:Grok.Numenta.TimeAggregation.GetWeeks">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November, 2012
+            Method: GetWeeks
+            Description: Returns the number of weeks in the aggregation interval.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.TimeAggregation.SetWeeks(System.Int32)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November, 2012
+            Method: SetWeeks
+            Description: Returns the number of weeks in the aggregation interval.
+            </summary>
+            <param name="weeks"></param>
+        </member>
+        <member name="M:Grok.Numenta.TimeAggregation.GetMonths">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November, 2012
+            Method: GetMonths
+            Description: Returns the number of months in the aggregation interval.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.TimeAggregation.SetMonths(System.Int32)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November, 2012
+            Method: SetMonths
+            Description: Sets the number of months in the aggregation interval.
+            </summary>
+            <param name="months"></param>
+        </member>
+        <member name="M:Grok.Numenta.TimeAggregation.GetUnits(System.String)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November, 2012
+            Method: GetUnits
+            Description: Private method to return a specific unit of aggregation from the dictionary
+            </summary>
+            <param name="Name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.TimeAggregation.SetUnits(System.String,System.Int32)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November, 2012
+            Method: SetUnits
+            Description: Private method to set a specific unit of aggregation from the dictionary
+            </summary>
+            <param name="Name"></param>
+            <param name="Value"></param>
+        </member>
+        <member name="M:Grok.Numenta.TimeAggregation.#ctor">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: TimeAggregation
+            Description: Default constructor
+            </summary>
+        </member>
+        <member name="M:Grok.Numenta.TimeAggregation.#ctor(System.String)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: TimeAggregation
+            Description: Constructor that takes an Interval string (e.g.: hours) and creates a new window of a single unit.
+            </summary>
+            <param name="Interval"></param>
+        </member>
+        <member name="M:Grok.Numenta.TimeAggregation.#ctor(Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: TimeAggregation
+            Description: Constructor that takes a JSON representation (i.e.: from the REST API) and creates a code representation of the
+            aggregation settings.
+            </summary>
+            <param name="JSONObject"></param>
+        </member>
+        <member name="M:Grok.Numenta.TimeAggregation.ToJSON">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: ToJSON
+            Description: Returns a JSON representation of the Time Aggregation
+            </summary>
+            <returns>A JSON Representation of the Time Aggregation that can be fed into the Grok REST API</returns>
+        </member>
+        <member name="P:Grok.Numenta.TimeAggregation.interval">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November, 2012
+            Method: Interval Accessor
+            Description: Accessor methods to set and retrieve the aggregation interval
+            </summary>
+        </member>
+        <member name="P:Grok.Numenta.TimeAggregation.FieldOverrides">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November, 2012
+            Method: FieldOverride Accessor
+            Description: Accessor method to set and retrieve the aggregation field overrides
+            </summary>
+        </member>
+        <member name="T:Grok.Numenta.UploadEvent">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November, 2012
+            Class: UploadEvent
+            Description: Event to call during Upload to track the progress of the upload
+            </summary>
+        </member>
+        <member name="M:Grok.Numenta.UploadEvent.ToString">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November, 2012
+            Method: ToString
+            Description: Returns a string representation of the upload percentage
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Grok.Numenta.User">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Class: User
+            Description: The <code>User</code> class represents a user account.
+            It can be used to perform basic retrieval and update operations.
+            Every valid API key is associated with at least one user account.
+            </summary>
+        </member>
+        <member name="M:Grok.Numenta.User.CreateUser(Grok.Numenta.IAPIClient,Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: CreateUser
+            Description: Creates a new user based on API client and JSON representation.
+            This constructor is intended to be used only be the API client directly.
+            </summary>
+            <param name="Client"></param>
+            <param name="JSONObject"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.User.Update">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: Update
+            Description: Calls into the API to update the User record
+            </summary>
+        </member>
+        <member name="M:Grok.Numenta.User.ToJSON">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: ToJSON
+            Description: Returns a JSON representation of the User
+            </summary>
+            <returns>A JSON Representation of the User that can be fed into the Grok REST API</returns>
+        </member>
+        <member name="M:Grok.Numenta.User.CreateProject(Grok.Numenta.Project)">
+             <summary>
+            Author: Jared Casner
+             Last Updated: 19 November 2012
+             Method: CreateProject
+             Description:  Creates a new project from a Project object
+             </summary>
+             <param name="project"></param>
+             <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.User.CreateProject(System.String)">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: CreateProject
+            Description: Create an empty Project with the given name
+            </summary>
+            <param name="ProjectName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.User.RetrieveProjects">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: RetrieveProjects
+            Description: Calls into the API to return the list of Projects for a User account
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.User.RetrieveStreams">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: RetrieveStreams
+            Description: Calls into the API to retrieve a list of Streams for the User account that are not associated to Projects
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Grok.Numenta.User.RetrieveAllStreams">
+            <summary>
+            Author: Jared Casner
+            Last Updated: 19 November 2012
+            Method: RetrieveAllStreams
+            Description: Calls into the API to retrieve a list of Streams for the User account, irrespective of association to Projects
+            </summary>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

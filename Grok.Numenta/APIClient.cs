@@ -17,13 +17,14 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Newtonsoft.Json;
+using System.Threading;
 using Newtonsoft.Json.Linq;
 
 namespace Grok.Numenta
 {
     /// <summary>
     /// Author: Jared Casner
-    /// Last Updated: 20 November, 2012
+    /// Last Updated: 18 December, 2012
     /// Class: APIClient
     /// Description: Default API Client so that we can connect to Grok
     /// </summary>
@@ -42,6 +43,7 @@ namespace Grok.Numenta
         private Version _AssemblyVersion;
 
         private HttpClient _HttpClient;
+ 
         #endregion Member Data
 
         #region Accessors
@@ -53,11 +55,11 @@ namespace Grok.Numenta
 
         public User DefaultUser
         {
-            get 
+            get
             {
                 if (_DefaultUser == null)
                     InitDefaultUser();
-                return _DefaultUser; 
+                return _DefaultUser;
             }
             set { _DefaultUser = value; }
         }
@@ -68,9 +70,9 @@ namespace Grok.Numenta
             set { _NumentaURI = value; }
         }
 
-        public string VersionNumber 
+        public string VersionNumber
         {
-            get 
+            get
             {
                 _CurrentAssembly = this.GetType().Assembly.GetName();
                 _AssemblyVersion = _CurrentAssembly.Version;
@@ -80,14 +82,41 @@ namespace Grok.Numenta
 
         public HttpClient HTTPClient
         {
-            get 
-            { 
+            get
+            {
                 if (_HttpClient == null)
                     _HttpClient = new HttpClient();
-                return _HttpClient; 
+                return _HttpClient;
             }
             set { _HttpClient = value; }
         }
+        /// <summary>
+        /// Number of times to try to connect to the API server in case of server error (500) 
+        /// or connection timeout error before throwing an exception.
+        /// Default value: 2
+        /// </summary>
+        public int Retry { get; set; }
+
+        /// <summary>
+        /// The number of seconds to wait between retries.
+        /// Default value: 10
+        /// </summary>
+        public int RetryAter { get; set; }
+
+        /// <summary>
+        /// Number of seconds to wait for the API server response.
+        /// </summary>
+        public int Timeout {
+            get
+            {
+                return (int)HTTPClient.Timeout.TotalSeconds;
+            }
+            set 
+            {
+                HTTPClient.Timeout = TimeSpan.FromSeconds(value);
+            } 
+        }
+
         #endregion Accessors
         #endregion Members and Accessors
 
@@ -128,6 +157,11 @@ namespace Grok.Numenta
             HTTPClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", AuthorizationHeader);
             HTTPClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             HTTPClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("Grok_API_Client.Net", VersionNumber));
+
+            // Default values for Retry and Timeout
+            Retry = 2;
+            RetryAter = 10;
+            Timeout = 30;
         }
         #endregion Constructors
 
@@ -140,21 +174,56 @@ namespace Grok.Numenta
         /// </summary>
         /// <param name="URL">Either an absolute or a relative URL</param>
         /// <returns></returns>
-        protected virtual HttpResponseMessage Get(string URL) 
+        protected virtual HttpResponseMessage Get(string URL)
         {
+
             if (!URL.ToUpper().StartsWith("HTTP"))
                 URL = NumentaURI + URL;
-            HttpResponseMessage response = _HttpClient.GetAsync(URL).Result;
 
-            if (response.IsSuccessStatusCode)
+            int retries = Retry;
+            bool resendRequest ;
+            HttpResponseMessage response = _HttpClient.GetAsync(URL).Result;
+            do
             {
-                return response;
-            }
-            else
-            {
-                throw new IOException("Failed to connect to " + NumentaURI + " with error " + (int)response.StatusCode + response.ReasonPhrase);
-            }
-	    }
+                resendRequest = --retries > 0;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return response;
+                }
+                else
+                {
+                    // Check for Server error and retry the connection
+                    if (response.StatusCode >= HttpStatusCode.InternalServerError)
+                    {
+
+                        int waitTime = RetryAter;
+
+                        // Get "Retry-After" header
+                        RetryConditionHeaderValue retryAfterHeader = response.Headers.RetryAfter;
+                        if (retryAfterHeader != null && retryAfterHeader.Delta.HasValue)
+                        {
+                            waitTime = retryAfterHeader.Delta.Value.Seconds;
+                            // Ignore the retry count configuration if server sent "Retry-After" header
+                            resendRequest = true;
+                        }
+                        if (resendRequest) 
+                        {
+                            // Wait a few seconds before resending the request
+                            Thread.Sleep(waitTime * 1000);
+
+                            // Resend the request
+                            response = _HttpClient.GetAsync(URL).Result;
+                            continue;
+                        } 
+                    }
+                    break; // Any other error throws an exception.
+                }
+            } while (resendRequest);
+
+           // Throw an exception with the last retry error
+           throw new IOException("Failed to connect to " + NumentaURI + " with error " + (int)response.StatusCode + response.ReasonPhrase);
+        }
 
         /// <summary>
         /// Author: Jared Casner
@@ -166,7 +235,15 @@ namespace Grok.Numenta
         /// <returns></returns>
         protected virtual JObject GetJSONObject(string URL)
         {
-            return JObject.Parse(Get(URL).Content.ReadAsStringAsync().Result);
+            HttpResponseMessage response = Get(URL);
+            JObject json = JObject.Parse(response.Content.ReadAsStringAsync().Result);
+            if (response.Content.Headers.Expires.HasValue)
+            {
+                DateTimeOffset expires = response.Content.Headers.Expires.Value;
+                TimeSpan offset = response.Content.Headers.Expires.Value.UtcDateTime.Subtract(DateTime.UtcNow);
+                json.Add("Expires", (int)Math.Round(offset.TotalSeconds));
+            }
+            return json;
         }
 
         /// <summary>
@@ -180,7 +257,7 @@ namespace Grok.Numenta
         /// <returns></returns>
         protected virtual JObject PostJSONObject(string URL, JObject JSONObject)
         {
-            return JObject.Parse(Post(URL, JSONObject.ToString()).Content.ReadAsStringAsync().Result); 
+            return JObject.Parse(Post(URL, JSONObject.ToString()).Content.ReadAsStringAsync().Result);
         }
 
         /// <summary>
@@ -204,14 +281,14 @@ namespace Grok.Numenta
             }
             else
             {
-                throw new IOException("Failed to connect to " + NumentaURI + " with error " + 
+                throw new APIException("Failed to connect to " + NumentaURI + " with error " +
                     (int)response.StatusCode + ":" + response.ReasonPhrase);
             }
         }
 
         /// <summary>
         /// Author: Jared Casner
-        /// Last Updated: 26 November, 2012
+        /// Last Updated: 18 December, 2012
         /// Method: DeleteJSONObject
         /// Description: Deletes a resource at the specified URL.
         /// </summary>
@@ -221,28 +298,28 @@ namespace Grok.Numenta
         {
             try
             {
-                return new JObject(Delete(URL));
+                return JObject.Parse(Delete(URL));
             }
             catch (Exception ex)
             {
                 throw new APIException("Failed to delete the object", ex);
             }
         }
-	
-	    /// <summary>
+
+        /// <summary>
         /// Author: Jared Casner
         /// Last Updated: 26 November, 2012
         /// Method: Delete
         /// Description: Deletes the resource at the specified URL.
-	    /// </summary>
-	    /// <param name="url"></param>
-	    /// <returns></returns>
-        protected virtual string Delete(string URL) 
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        protected virtual string Delete(string URL)
         {
-		    try 
+            try
             {
                 Object LockObject = new Object();
-			    lock (LockObject) 
+                lock (LockObject)
                 {
                     HttpResponseMessage response = _HttpClient.DeleteAsync(URL).Result;
 
@@ -254,13 +331,13 @@ namespace Grok.Numenta
                     {
                         throw new IOException("Failed to connect to " + NumentaURI + " with error " + (int)response.StatusCode + response.ReasonPhrase);
                     }
-			    }
+                }
 
-		    } 
-            catch (Exception ex) 
+            }
+            catch (Exception ex)
             {
-			    throw new APIException("Failed to delete the object", ex);
-		    }
+                throw new APIException("Failed to delete the object", ex);
+            }
         }
         #endregion HTTP Calls
 
@@ -270,8 +347,8 @@ namespace Grok.Numenta
         /// Last Updated: 11 December, 2012
         /// Method: RetrieveUsers
         /// Description: retrieves a list of users
-	    /// </summary>
-	    /// <returns></returns>
+        /// </summary>
+        /// <returns></returns>
         public List<User> RetrieveUsers()
         {
             try
@@ -303,14 +380,14 @@ namespace Grok.Numenta
         /// Typically, the API key will only have access to one user account.
         /// This method gets that user account.        
         /// </summary>
-        public virtual void InitDefaultUser() 
+        public virtual void InitDefaultUser()
         {
-		    foreach (User user in RetrieveUsers()) 
+            foreach (User user in RetrieveUsers())
             {
-			    this.DefaultUser = user;
-			    break;
-		    }
-	    }
+                this.DefaultUser = user;
+                break;
+            }
+        }
 
         /// <summary>
         /// Author: Jared Casner
@@ -782,24 +859,24 @@ namespace Grok.Numenta
         /// <param name="Command"></param>
         /// <param name="Parameters"></param>
         /// <returns></returns>
-	    public JObject SendModelCommand(string URL, string Command, JObject Parameters) 
+        public JObject SendModelCommand(string URL, string Command, JObject Parameters)
         {
-		    try 
+            try
             {
-			    JObject request = new JObject();
-			    request.Add("command", Command);
-			
-			    if (Parameters != null) 
-				    request.Add("params", Parameters);
-			
-			    return PostJSONObject(URL, request);
-		    } 
-            catch (Exception ex) 
+                JObject request = new JObject();
+                request.Add("command", Command);
+
+                if (Parameters != null)
+                    request.Add("params", Parameters);
+
+                return PostJSONObject(URL, request);
+            }
+            catch (Exception ex)
             {
-			    throw new APIException("Error while sending Model Command " + Command, ex);
-		    }
-	    }
-	
+                throw new APIException("Error while sending Model Command " + Command, ex);
+            }
+        }
+
         /// <summary>
         /// Author: Jared Casner
         /// Last Updated: 20 November, 2012
@@ -810,28 +887,28 @@ namespace Grok.Numenta
         /// <param name="Command"></param>
         /// <param name="Parameterss"></param>
         /// <returns></returns>
-	    public JObject SendModelCommand(string URL, string Command, Dictionary<string, string> Parameters) 
+        public JObject SendModelCommand(string URL, string Command, Dictionary<string, string> Parameters)
         {
-		    try 
+            try
             {
-			    JObject JsonParams = null;
-			
-			    if (Parameters != null && Parameters.Count > 0) 
+                JObject JsonParams = null;
+
+                if (Parameters != null && Parameters.Count > 0)
                 {
-				    JsonParams = new JObject();
-				    foreach (string Key in Parameters.Keys) 
+                    JsonParams = new JObject();
+                    foreach (string Key in Parameters.Keys)
                     {
-					    JsonParams.Add(Key, Parameters[Key]);
-				    }
-			    }
-			    return SendModelCommand(URL, Command, JsonParams);
-		    } 
-            catch (Exception ex) 
+                        JsonParams.Add(Key, Parameters[Key]);
+                    }
+                }
+                return SendModelCommand(URL, Command, JsonParams);
+            }
+            catch (Exception ex)
             {
-			    throw new APIException("Error sending Model Command " + Command, ex);
-		    }
-	    }
-	
+                throw new APIException("Error sending Model Command " + Command, ex);
+            }
+        }
+
         /// <summary>
         /// Author: Jared Casner
         /// Last Updated: 20 November, 2012
@@ -841,11 +918,11 @@ namespace Grok.Numenta
         /// <param name="URL"></param>
         /// <param name="Command"></param>
         /// <returns></returns>
-	    public JObject SendModelCommand(string URL, string Command) 
+        public JObject SendModelCommand(string URL, string Command)
         {
             return SendModelCommand(URL, Command, (JObject)null);
-	    }
-	
+        }
+
         /// <summary>
         /// Author: Jared Casner
         /// Last Updated: 20 November, 2012
@@ -856,11 +933,11 @@ namespace Grok.Numenta
         /// <param name="Command"></param>
         /// <param name="Parameters"></param>
         /// <returns></returns>
-	    public JObject SendModelCommand(Model CurrentModel, string Command, Dictionary<string, string> Parameters) 
+        public JObject SendModelCommand(Model CurrentModel, string Command, Dictionary<string, string> Parameters)
         {
-		    return SendModelCommand(CurrentModel.commandsUrl, Command, Parameters);
-	    }
-	
+            return SendModelCommand(CurrentModel.commandsUrl, Command, Parameters);
+        }
+
         /// <summary>
         /// Author: Jared Casner
         /// Last Updated: 20 November, 2012
@@ -872,8 +949,8 @@ namespace Grok.Numenta
         /// <returns></returns>
         public JObject SendModelCommand(Model CurrentModel, string Command)
         {
-		    return SendModelCommand(CurrentModel, Command, null);
-	    }
+            return SendModelCommand(CurrentModel, Command, null);
+        }
 
         /// <summary>
         /// Author: Jared Casner
@@ -1026,6 +1103,18 @@ namespace Grok.Numenta
         public bool DeleteModel(Model ModelToDelete)
         {
             return DeleteModel(ModelToDelete.url);
+        }
+
+        /// <summary>
+        /// Clone model based on the last checkpoint
+        /// </summary>
+        /// <param name="ModelToClone"></param>
+        /// <returns></returns>
+        public Model CloneModel(Model ModelToClone)
+        {
+            var json = PostJSONObject(ModelToClone.url+ "/clone", new JObject());
+            Model clone = Model.CreateModel(this, json);
+            return clone;
         }
         #endregion Model Methods
     }

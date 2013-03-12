@@ -65,9 +65,7 @@ namespace Grok.Numenta
         {
             get
             {
-                int Index = Names.IndexOf(Key);
-                List<string> DataColumn = new List<string>();
-                return this[Index];
+                return this[Names.IndexOf(Key)];
             }
         }
 
@@ -98,6 +96,22 @@ namespace Grok.Numenta
                 return DataColumn;
             }
         }
+
+        /// <summary>
+        /// Contains the index of the field representing time for this DataTable. 
+        /// </summary>
+        public int TimestampIndex { get; set; }
+
+        /// <summary>
+        /// Contains the index of the field representing the Predicted Field Prediction value for this DataTable
+        /// </summary>
+        public int PredictionFieldIndex { get; set; }
+
+        /// <summary>
+        /// Contains the index of the field representing the Predicted Field Actual value for this DataTable
+        /// </summary>
+        public int PredictedFieldIndex { get; set; }
+
         #endregion Accessors
         #endregion Members and Accessors
 
@@ -136,7 +150,27 @@ namespace Grok.Numenta
 
                     this.Data.Add(values);
 			    }
-			
+
+                // Get meta data
+                if (JSONObject[key]["meta"] != null)
+                {
+                    JObject Meta = JSONObject[key]["meta"].ToObject<JObject>();
+                    if (Meta != null)
+                    {
+                        if (Meta["timestampIndex"] != null)
+                        {
+                            TimestampIndex = Meta["timestampIndex"].Value<int>();
+                        }
+                        if (Meta["predictedFieldIndex"] != null)
+                        {
+                            PredictedFieldIndex = Meta["predictedFieldIndex"].Value<int>();
+                        }
+                        if (Meta["predictedFieldPredictionIndex"] != null)
+                        {
+                            PredictionFieldIndex = Meta["predictedFieldPredictionIndex"].Value<int>();
+                        }
+                    }
+                }
 		    } 
             catch (Exception ex) 
             {
@@ -161,18 +195,26 @@ namespace Grok.Numenta
 	    /// </summary>
 	    /// <param name="InputFile"></param>
 	    /// <param name="HasHeaders"></param>
-        public DataTable(FileInfo InputFile, bool HasHeaders) : this(InputFile, HasHeaders, int.MaxValue) { }	
+        public DataTable(FileInfo InputFile, bool HasHeaders) : this(InputFile, HasHeaders, int.MaxValue) { }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="InputFile"></param>
+        /// <param name="HasHeaders"></param>
+        /// <param name="MaxRows"></param>
+        public DataTable(FileInfo InputFile, bool HasHeaders, int MaxRows) : this(InputFile, HasHeaders, MaxRows, 0) { }
 	    /// <summary>
         /// Author: Jared Casner
-        /// Last Updated: 20 November 2012
+        /// Last Updated: 19 December 2012
         /// Method: DataTable
         /// Description: Creates a new DataTable based on a CSV File
 	    /// </summary>
 	    /// <param name="InputFile"></param>
 	    /// <param name="HasHeaders"></param>
 	    /// <param name="MaxRows"></param>
-        public DataTable(FileInfo InputFile, bool HasHeaders, int MaxRows)
+        /// <param name="SkipRows"></param>
+        public DataTable(FileInfo InputFile, bool HasHeaders, int MaxRows, int SkipRows)
         {
 		    CsvReader Reader = null;
 		
@@ -181,16 +223,19 @@ namespace Grok.Numenta
 			    this.Data = new List<string[]>();
 
                 Reader = new CsvReader(new StreamReader(InputFile.FullName));
+                Reader.Read();
 		    
 		        if (HasHeaders) 
                 {
-                    Reader.Read();
-                    this.Names = Reader.CurrentRecord.ToList();
+                    this.Names = Reader.FieldHeaders.ToList();
 		        } 
                 else 
                 {
 		    	    this.Names = null;
+                    Data.Add(Reader.FieldHeaders);
 		        }
+                for (int i = 0; i < SkipRows; i++)
+                    Reader.Read();
 
                 while (Reader.Read() && Data.Count < MaxRows)
                     Data.Add(Reader.CurrentRecord);
@@ -266,7 +311,7 @@ namespace Grok.Numenta
 		    }
 		    return result;
 	    }
-	
+
         /// <summary>
         /// Author: Jared Casner
         /// Last Updated: 20 November 2012
@@ -312,6 +357,7 @@ namespace Grok.Numenta
 			    }
 		    }
         }
+
         #endregion Helper Methods
     }
 }

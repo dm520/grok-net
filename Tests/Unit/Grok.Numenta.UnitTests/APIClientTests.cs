@@ -19,6 +19,7 @@ using Newtonsoft.Json.Linq;
 
 using Grok.Numenta;
 using Grok.Numenta.UnitTests;
+using System.Diagnostics;
 
 namespace Grok.Numenta.UnitTests
 {
@@ -288,6 +289,17 @@ namespace Grok.Numenta.UnitTests
         }
 
         [Test]
+        public void TestRetrieveSwarm_Expires()
+        {
+            APIClient ClientUnderTest = new APIClient("FAKE_API_CLIENT");
+            ClientUnderTest.HTTPClient = GetHttpClientWith200ResponseAndExpires(_SwarmJSON, DateTimeOffset.UtcNow.AddSeconds(30));
+
+            Swarm TestSwarm = ClientUnderTest.RetrieveSwarm(string.Empty);
+
+            Assert.AreEqual(30, TestSwarm.Expires);
+        }
+
+        [Test]
         public void TestCreateSwarm_GoodRequest()
         {
             APIClient ClientUnderTest = new APIClient("FAKE_API_CLIENT");
@@ -479,6 +491,79 @@ namespace Grok.Numenta.UnitTests
         }
         #endregion
 
+        #region Connection Tests
+        [Test]
+        public void TestRetryAfterNoHeader()
+        {
+            HttpResponseMessage goodResponse = new HttpResponseMessage(HttpStatusCode.OK);
+            goodResponse.Content = new StringContent(@"{ ""project"": {
+                                                                        ""streamsUrl"": ""https://api.numenta.com/v2/projects/dbbfc567-c409-4e7a-b06f-941f752e2f55/streams"", 
+                                                                        ""name"": ""API Doc project for retrieval"", 
+                                                                        ""url"": ""https://api.numenta.com/v2/projects/dbbfc567-c409-4e7a-b06f-941f752e2f55"", 
+                                                                        ""lastUpdated"": ""2012-08-15T22:12:44Z"", 
+                                                                        ""modelsUrl"": ""https://api.numenta.com/v2/projects/dbbfc567-c409-4e7a-b06f-941f752e2f55/models"", 
+                                                                        ""id"": ""dbbfc567-c409-4e7a-b06f-941f752e2f55"", 
+                                                                        ""createdAt"": ""2012-08-15T22:12:44Z""
+                                                                      }
+                                                                    }");
+
+            // Simulate Service Unavailable error (503) recovering on the 3rd retry
+            HttpClient HTTPClient = new HttpClient(new FakeRetryHandler()
+            {
+                Retries = 3,
+                Response = goodResponse,
+                BadResponse = new HttpResponseMessage(HttpStatusCode.ServiceUnavailable),
+                InnerHandler = new HttpClientHandler()
+            });
+            APIClient ClientUnderTest = new APIClient("FAKE_API_KEY") { Retry = 3, Timeout = 30 };
+            ClientUnderTest.HTTPClient = HTTPClient;
+
+            // Try to connect and get a fake project
+            Project project = ClientUnderTest.RetrieveProject("https://api.numenta.com/v2/projects/dbbfc567-c409-4e7a-b06f-941f752e2f55");
+            Assert.AreEqual("dbbfc567-c409-4e7a-b06f-941f752e2f55", project.id);
+        }
+        [Test]
+        public void TestRetryAfterWithHeader()
+        {
+            HttpResponseMessage goodResponse = new HttpResponseMessage(HttpStatusCode.OK);
+            goodResponse.Content = new StringContent(@"{ ""project"": {
+                                                                        ""streamsUrl"": ""https://api.numenta.com/v2/projects/dbbfc567-c409-4e7a-b06f-941f752e2f55/streams"", 
+                                                                        ""name"": ""API Doc project for retrieval"", 
+                                                                        ""url"": ""https://api.numenta.com/v2/projects/dbbfc567-c409-4e7a-b06f-941f752e2f55"", 
+                                                                        ""lastUpdated"": ""2012-08-15T22:12:44Z"", 
+                                                                        ""modelsUrl"": ""https://api.numenta.com/v2/projects/dbbfc567-c409-4e7a-b06f-941f752e2f55/models"", 
+                                                                        ""id"": ""dbbfc567-c409-4e7a-b06f-941f752e2f55"", 
+                                                                        ""createdAt"": ""2012-08-15T22:12:44Z""
+                                                                      }
+                                                                    }");
+
+            HttpResponseMessage badResponse = new HttpResponseMessage(HttpStatusCode.ServiceUnavailable);
+            badResponse.Headers.Add("Retry-After", "30"); // Tell client to retry after 30 seconds
+
+            // Simulate Bad Gateway and recovery on the second time
+            HttpClient HTTPClient = new HttpClient(new FakeRetryHandler()
+            {
+                Retries = 2, 
+                Response = goodResponse,
+                BadResponse = badResponse,
+                InnerHandler = new HttpClientHandler()
+            });
+
+            APIClient ClientUnderTest = new APIClient("FAKE_API_KEY") { Retry = 0, Timeout = 30 };
+            ClientUnderTest.HTTPClient = HTTPClient;
+
+            // Try to connect and get a fake project
+            Stopwatch timer = Stopwatch.StartNew();
+            Project project = ClientUnderTest.RetrieveProject("https://api.numenta.com/v2/projects/dbbfc567-c409-4e7a-b06f-941f752e2f55");
+            timer.Stop();
+            Assert.AreEqual("dbbfc567-c409-4e7a-b06f-941f752e2f55", project.id);
+
+            // The first request will return Service Unavailable error (503) with "Retry-After" 30 seconds.
+            // The client should wait at least 30 seconds before retrying.
+            Assert.GreaterOrEqual((timer.ElapsedMilliseconds + 500)/1000, 30);
+        }
+        #endregion
+
         #region Helper Methods
         private HttpClient GetHttpClientWith400Response()
         {
@@ -496,10 +581,22 @@ namespace Grok.Numenta.UnitTests
             HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
             response.Content = new StringContent(RequestContent);
             HttpClient HTTPClient = new HttpClient(new FakeHandler
-                                                        {
-                                                            Response = response,
-                                                            InnerHandler = new HttpClientHandler()
-                                                        });
+            {
+                Response = response,
+                InnerHandler = new HttpClientHandler()
+            });
+            return HTTPClient;
+        }
+        private HttpClient GetHttpClientWith200ResponseAndExpires(string RequestContent, DateTimeOffset expires)
+        {
+            HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+            response.Content = new StringContent(RequestContent);
+            response.Content.Headers.Expires = expires;
+            HttpClient HTTPClient = new HttpClient(new FakeHandler
+            {
+                Response = response,
+                InnerHandler = new HttpClientHandler()
+            });
             return HTTPClient;
         }
         #endregion

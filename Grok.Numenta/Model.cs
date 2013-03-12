@@ -17,7 +17,7 @@ namespace Grok.Numenta
 {
     /// <summary>
     /// Author: Jared Casner
-    /// Last Updated: 19 November 2012
+    /// Last Updated: 03 January 2013
     /// Class: Model
     /// Description: Represents a Grok Model
     /// </summary>
@@ -27,16 +27,30 @@ namespace Grok.Numenta
         #region Members and Accessors
         #region Member Variables
         public const string COMMAND_SWARM = "swarm";
-	    public const string COMMAND_PROMOTE = "promote";
+	    
+        public const string COMMAND_PROMOTE = "promote";
 	    public const string COMMAND_START = "start";
 	    public const string COMMAND_STOP = "stop";
-	    public const string COMMAND_DISABLE_LEARNING = "disableLearning";
+        public const string COMMAND_CLONE = "clone";
+	    
+        public const string COMMAND_DISABLE_LEARNING = "disableLearning";
 	    public const string COMMAND_ENABLE_LEARNING = "enableLearning";
+
+        public const string COMMAND_ADD_LABEL = "addLabel";
+        public const string COMMAND_REMOVE_LABEL = "removeLabels";
+        public const string COMMAND_GET_LABELS = "getLabels";
+        public const string COMMAND_SET_ANOMALY_THRESHOLD = "setAutoDetectThreshold";
+        public const string COMMAND_GET_ANOMALY_THRESHOLD = "getAutoDetectThreshold";
+
+
+        public const string TYPE_ANOMALY = "anomalyDetector";
+        public const string TYPE_PREDICTOR = "predictor";
 	
 	    private IAPIClient _Client;
 	    private string _ID;
 	    private string _URL;
 	    private string _Name;
+        private string _ModelType;
 	    private string _InputStreamId;
 	    private string _PredictedField;
 	    private string _Status;
@@ -45,11 +59,14 @@ namespace Grok.Numenta
 	    private string _SwarmsUrl;
         private string _CheckpointsURL;
         private string _ProjectID;
+        private string _FastSwarmModelID;
 	    private DateTime _CreatedAt;
 	    private DateTime _LastUpdated;
+        private Swarm _LastSwarm;
 	    private TimeAggregation _Aggregation;
 	    private List<int> _PredictionSteps;
 	    private JObject _Parameters;
+        private Dictionary<string, Object> _CustomErrorMetric;
         #endregion Member Variables
 
         #region Accessors
@@ -66,6 +83,12 @@ namespace Grok.Numenta
             get { return _ID; }
             set { _ID = value; }
         }
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string modelType
+        {
+            get { return _ModelType; }
+            set { _ModelType = value; }
+        }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string projectId
@@ -79,6 +102,12 @@ namespace Grok.Numenta
         {
             get { return _URL; }
             set { _URL = value; }
+        }
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public Swarm lastSwarm
+        {
+            get { return _LastSwarm; }
+            set { _LastSwarm = value; }
         }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
@@ -137,6 +166,13 @@ namespace Grok.Numenta
             set { _CommandsUrl = value; }
         }
 
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string fastSwarmModelId
+        {
+            get { return _FastSwarmModelID; }
+            set { _FastSwarmModelID = value; }
+        }
+
         [JsonIgnore]
         public DateTime createdAt
         {
@@ -161,6 +197,18 @@ namespace Grok.Numenta
         {
             get { return _PredictionSteps; }
             set { _PredictionSteps = value; }
+        }
+
+        /// <summary>
+        /// NOTE: This needs to be instantiated before setting; if it gets set to an empty value,
+        /// then the JSON representation will be invalid, causing an HTTP error when creating
+        /// a Model.  Therefore, it needs to be instantiated locally.
+        /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public Dictionary<string, Object> customErrorMetric
+        {
+            get { return _CustomErrorMetric; }
+            set { _CustomErrorMetric = value; }
         }
 
         [JsonIgnore]
@@ -201,6 +249,10 @@ namespace Grok.Numenta
                 //assume a single user is being passed in
                 Model NewModel = JsonConvert.DeserializeObject<Model>(JSONObject["model"].ToString());
                 NewModel.ModelAPIClient = Client;
+                if (NewModel.lastSwarm != null)
+                {
+                    NewModel.lastSwarm.SwarmAPIClient = Client;
+                }
                 return NewModel;
             }
             catch (Exception ex)
@@ -208,8 +260,174 @@ namespace Grok.Numenta
                 throw new APIException("Could not deserialize the JSON", ex);
             }
         }
+        /// <summary>
+        /// Create a prediction model
+        /// </summary>
+        public Model(): this(TYPE_PREDICTOR)
+        {         
+        }
+        /// <summary>
+        /// Creates a model
+        /// </summary>
+        /// <param name="type">TYPE_ANOMALY or TYPE_PREDICTOR</param>
+        public Model(string type)
+        {
+            _ModelType = type;
+        }
         #endregion Constructors
 
+        #region Model Anomaly Methods
+        /// <summary>
+        /// This method sets the threshold used for automatic classification. 
+        /// If different from current setting, it will recalculate all classifications within the anomaly cache. 
+        /// If it is set above 1.0, it will not classify anything.  
+        /// </summary>
+        /// <param name="threshold">the value to set the automatic classification threshold to</param>
+        public void SetAnomalyThreshold(double threshold)
+        {
+            try
+            {
+                JObject commandParams = new JObject();
+                commandParams.Add("autoDetectThreshold", threshold);
+                JObject JSONResponse = ModelAPIClient.SendModelCommand(this.commandsUrl, COMMAND_SET_ANOMALY_THRESHOLD, commandParams);
+                if (JSONResponse["error"] != null)
+                {
+                    throw new APIException(JSONResponse["error"].ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new APIException("Failed to Set Anomaly Threshold: " + ex.Message, ex);
+            }
+        }
+        /// <summary>
+        /// This method returns the threshold used for automatic classification
+        /// </summary>
+        /// <returns></returns>
+        public double GetAnomalyThreshold()
+        {
+            try
+            {
+                JObject response = ModelAPIClient.SendModelCommand(this, COMMAND_GET_ANOMALY_THRESHOLD);
+                if (response["error"] != null)
+                {
+                    throw new APIException(response["error"].ToString());
+                }
+                if (response["autoDetectThreshold"] != null)
+                {
+                    return response["autoDetectThreshold"].Value<double>();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new APIException("Failed to Get Anomaly Threshold: " + ex.Message, ex);
+            }
+            return Double.NaN;
+        }
+        /// <summary>
+        /// This method adds the label ‘labelName’ to each point within the range [startRecord, endRecord].
+        /// </summary>
+        /// <param name="startRecord"></param>
+        /// <param name="endRecord"></param>
+        /// <param name="labelName"></param>
+        public void AddLabel(int startRecord, int endRecord, string labelName)
+        {
+            try
+            {
+                Dictionary<string, string> commandParams = new Dictionary<string, string>();
+                commandParams.Add("startRecordID", startRecord.ToString());
+                commandParams.Add("endRecordID", endRecord.ToString());
+                commandParams.Add("labelName", labelName);
+                JObject JSONResponse = ModelAPIClient.SendModelCommand(this, COMMAND_ADD_LABEL, commandParams);
+                if (JSONResponse["error"] != null)
+                {
+                    throw new APIException(JSONResponse["error"].ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new APIException("Failed to add label: " + ex.Message, ex);
+            }
+        }
+        /// <summary>
+        /// This method returns the labels of a range of records. 
+        /// </summary>
+        /// <param name="startRecord"></param>
+        /// <param name="endRecord"></param>
+        /// <returns>
+        /// A dictionary mapping each record to a list of labels associated with that record
+        /// or an empty dictionary if the model is still re-processing the newly added labels.
+        /// </returns>
+        public Dictionary<int, List<string>> GetLabels(int startRecord = 0, int endRecord = -1)
+        {
+            try
+            {
+                Dictionary<string, string> commandParams = new Dictionary<string, string>();
+                if (startRecord > 0)
+                    commandParams.Add("startRecordID", startRecord.ToString());
+                if (endRecord > 0)
+                    commandParams.Add("endRecordID", endRecord.ToString());
+                JObject response = ModelAPIClient.SendModelCommand(this, COMMAND_GET_LABELS, commandParams);
+                if (response["error"] != null)
+                {
+                    // Check if the model is still processing
+                    if (response["isProcessing"] != null && response["isProcessing"].Value<Boolean>())
+                    {
+                        // Nothing to return here
+                        /// FIXME: Should we block and wait for the labels instead?
+                        return new Dictionary<int, List<string>>(); ;
+                    }
+                    throw new APIException(response["error"].ToString());
+                }
+
+                // build dictionary from response
+                Dictionary<int, List<string>> results = new Dictionary<int, List<string>>();
+                foreach (var row in response["recordLabels"])
+                {
+                    var id = row["ROWID"].Value<int>();
+                    List<string> list = new List<string>();
+                    foreach (var label in row["labels"])
+                    {
+                        list.Add((string)label);
+                    }
+                    results.Add(id, list);
+                }
+                return results;
+            }
+            catch (Exception ex)
+            {
+                throw new APIException("Failed to get labels: " + ex.Message, ex);
+            }
+        }
+        /// <summary>
+        /// This method removes labels from a range of records
+        /// </summary>
+        /// <param name="startRecord"></param>
+        /// <param name="endRecord"></param>
+        /// <param name="labelFilter"></param>
+        public void RemoveLabels(int startRecord = 0, int endRecord = -1, string labelFilter = null)
+        {
+            try
+            {
+                Dictionary<string, string> commandParams = new Dictionary<string, string>();
+                commandParams.Add("startRecordID", startRecord.ToString());
+                if (endRecord != -1)
+                    commandParams.Add("endRecordID", endRecord.ToString());
+                if (labelFilter != null)
+                    commandParams.Add("labelFilter", labelFilter);
+                JObject JSONResponse = ModelAPIClient.SendModelCommand(this, COMMAND_REMOVE_LABEL, commandParams);
+                if (JSONResponse["error"] != null)
+                {
+                    throw new APIException((string)JSONResponse["error"].ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new APIException("Failed to remove labels: " + ex.Message, ex);
+            }
+        }
+        
+        #endregion
         #region Model Swarm Methods
         /// <summary>
         /// Author: Jared Casner
@@ -243,8 +461,8 @@ namespace Grok.Numenta
 			    throw new APIException("Failed to swarm model", ex);
 		    }
 	    }
-	
-	    /// <summary>
+
+        /// <summary>
         /// Author: Jared Casner
         /// Last Updated: 19 November 2012
         /// Method: CreateSwarm
@@ -344,7 +562,21 @@ namespace Grok.Numenta
         {
             ModelAPIClient.SendModelCommand(this, COMMAND_START);
         }
-
+        /// <summary>
+        /// Sends a command to Stop the model
+        /// </summary>
+        public void Stop()
+        {
+            ModelAPIClient.SendModelCommand(this, COMMAND_STOP);
+        }
+        /// <summary>
+        /// Clone model based on the last checkpoint
+        /// </summary>
+        /// <returns>Cloned Model</returns>
+        public Model Clone()
+        {
+            return ModelAPIClient.CloneModel(this);
+        }
         /// <summary>
         /// Author: Jared Casner
         /// Last Updated: 19 November 2012
@@ -450,32 +682,51 @@ namespace Grok.Numenta
 	
         /// <summary>
         /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
+        /// Last Updated: 03 January 2013
         /// Method: WaitForStabilization
         /// Description: Pauses execution until the Model fully stabilizes
         /// </summary>
         /// <param name="Verbose"></param>
-	    public void WaitForStabilization(bool Verbose) 
+	    public void WaitForStabilization(bool Verbose)
         {
-            DataTable CurrentData = RetrieveData();
-		    int lastId = CurrentData.Data.Count;
-		    int Counter = 1;
-
-            while (Counter < 5)
+            int LastID = 0;
+            DataTable CurrentData = RetrieveData(1, false);
+            try
             {
-                if (CurrentData.Data.Count == lastId)
-                    Counter++;
+                LastID = Convert.ToInt32(CurrentData["ROWID"][0]);
+            }
+            catch (KeyNotFoundException)
+            {
+                Console.WriteLine("Could not retrieve data for this model. Trying again");
+                Thread.Sleep(5000);
+                try
+                {
+                    CurrentData = RetrieveData(1, false);
+                    LastID = Convert.ToInt32(CurrentData["ROWID"][0]);
+                }
+                catch (KeyNotFoundException)
+                {
+                    Console.WriteLine("Could not retrieve data for this model. Moving on");
+                    return;
+                }
+            }
+
+            while (true)
+            {
+                Thread.Sleep(5000); 
+                CurrentData = RetrieveData(1);
+                int CurrentID = Convert.ToInt32(CurrentData["ROWID"][0]);
+                if (CurrentID == LastID)
+                    break;
                 else
-                    Counter = 1;
+                    LastID = CurrentID;
+                
                 if (Verbose)
-                    Console.WriteLine("Model stabilizing (" + CurrentData.Data.Count + " rows for " + Counter + " step(s))...");
-			    Thread.Sleep(1000);
-                lastId = CurrentData.Data.Count;
-                CurrentData = RetrieveData();
+                    Console.WriteLine("Model stabilizing (" + (LastID + 1) + " rows)...");
 		    }
             if (Verbose)
             {
-                Console.WriteLine("Model stabilized at row " + lastId + "!");
+                Console.WriteLine("Model stabilized at row " + (LastID + 1) + "!");
 		    }
 	    }
         #endregion Stabilization Methods
@@ -605,5 +856,7 @@ namespace Grok.Numenta
             }
 	    }
         #endregion Helper Methods
+
+
     }
 }

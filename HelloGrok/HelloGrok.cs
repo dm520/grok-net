@@ -89,6 +89,9 @@ namespace HelloGrok
 			    HelloGrokModel.streamId = stream.id;
 			    HelloGrokModel.predictedField = consumption.name;
 			    HelloGrokModel.aggregation = aggregation;
+                HelloGrokModel.predictionSteps = new List<int>();
+                HelloGrokModel.predictionSteps.Add(1);
+                HelloGrokModel.predictionSteps.Add(2);
 			    HelloGrokModel = project.CreateModel(HelloGrokModel);
 
 			    // Stream data from a local file source

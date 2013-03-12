@@ -6,3 +6,5 @@ TestBench/
 *.VisualState.*
 TestResult.xml
 SwarmOutput.csv
+*.pdb
+Debug

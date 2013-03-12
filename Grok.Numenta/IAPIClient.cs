@@ -54,5 +54,6 @@ namespace Grok.Numenta
         List<Model> RetrieveModels(string URL);
         Model RetrieveModel(string URL);
         Model RetrieveModelById(string ID);
+        Model CloneModel(Model ModelToClone);
     }
 }

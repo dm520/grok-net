@@ -89,7 +89,7 @@ namespace Grok.Numenta.UnitTests
 
             Assert.AreEqual((string)JSONObject["name"], "Test Name");
             Assert.AreEqual((string)JSONObject["dataFormat"]["dataType"], DataSourceField.TYPE_SCALAR);
-            Assert.AreEqual((string)JSONObject["dataFormat"]["flag"], DataSourceField.FLAG_NONE);
+            Assert.AreEqual((string)JSONObject["flag"], DataSourceField.FLAG_NONE);
             Assert.AreEqual((double)JSONObject["min"], 0);
             Assert.AreEqual((double)JSONObject["max"], 10);
             Assert.IsNull(JSONObject["dataFormat"]["formatString"]);

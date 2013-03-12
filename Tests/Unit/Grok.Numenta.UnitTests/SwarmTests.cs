@@ -79,5 +79,52 @@ namespace Grok.Numenta.UnitTests
             Assert.AreEqual((string)SwarmUnderTest.details["fieldsUsed"][0], "consumption");
             Assert.AreEqual(SwarmUnderTest.SwarmAPIClient, MockClient);
         }
+
+        [Test]
+        public void TestCreateSwarm_SwarmList()
+        {
+            string JSON = @"{ ""swarms"": 
+                              [{
+	                            ""status"": ""completed"", 
+	                            ""url"": ""https://dailystaging-api.numenta.com/v2/swarms/d7406434-03c6-4886-8f1f-4ee2eef80a46"", 
+	                            ""results"": {
+		                            ""grokScore"": null, 
+		                            ""averageError"": 259.92956349206349}, 
+		                            ""lastUpdated"": ""2012-12-21T00:45:30Z"", 
+		                            ""jobId"": 1812, 
+		                            ""averageError"": 259.93000000000001, 
+		                            ""params"": {
+		                              ""size"": ""small"" }, 
+		                            ""details"": {
+		                             ""fieldContributions"": [], 
+		                             ""numRecords"": 31, 
+		                             ""cpuTime"": 4.0199999999999996, 
+		                             ""bestModel"": 25817905, 
+		                             ""fieldsUsed"": [""Value""], 
+		                             ""startTime"": ""2012-12-21T00:45:01Z"", 
+		                             ""optimizedMetric"": 53.946591337792015, 
+		                             ""endTime"": ""2012-12-21T00:45:29Z"", 
+		                             ""bestValue"": 53.946591337792015}, 
+	                             ""id"": ""d7406434-03c6-4886-8f1f-4ee2eef80a46"", 
+	                             ""createdAt"": ""2012-12-21T00:45:01Z"", 
+	                             ""modelId"": ""8e0b9b59-3ad1-4281-a5cf-aa2ef62c6c8f""}]
+	                             }";
+
+            APIClient MockClient = new APIClient("FAKE_API_KEY");
+
+            JObject JSONObject = JObject.Parse(JSON);
+
+            Swarm SwarmUnderTest = Swarm.CreateSwarm(MockClient, JSONObject);
+
+            Assert.AreEqual(SwarmUnderTest.id, "d7406434-03c6-4886-8f1f-4ee2eef80a46");
+            Assert.AreEqual(SwarmUnderTest.status, "completed");
+            Assert.AreEqual(SwarmUnderTest.url, "https://dailystaging-api.numenta.com/v2/swarms/d7406434-03c6-4886-8f1f-4ee2eef80a46");
+            Assert.AreEqual((JArray)SwarmUnderTest.details["fieldContributions"], new JArray());
+            Assert.AreEqual((int)SwarmUnderTest.details["numRecords"], 31);
+            Assert.AreEqual((double)SwarmUnderTest.details["cpuTime"], 4.0199999999999996);
+            Assert.AreEqual((int)SwarmUnderTest.details["bestModel"], 25817905);
+            Assert.AreEqual((string)SwarmUnderTest.details["fieldsUsed"][0], "Value");
+            Assert.AreEqual(SwarmUnderTest.SwarmAPIClient, MockClient);
+        }
     }
 }
