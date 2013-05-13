@@ -8,3 +8,5 @@ TestResult.xml
 SwarmOutput.csv
 *.pdb
 Debug
+html
+packages
