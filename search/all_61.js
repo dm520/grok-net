@@ -1,6 +1,7 @@
 var searchData=
 [
   ['addlabel',['AddLabel',['../class_grok_1_1_numenta_1_1_model.html#a4da567904bceacc0acbb422523233e07',1,'Grok::Numenta::Model']]],
+  ['anomalyscorefieldindex',['AnomalyScoreFieldIndex',['../class_grok_1_1_numenta_1_1_data_table.html#a59354479a5f62a541f6a2fed36292770',1,'Grok::Numenta::DataTable']]],
   ['apiclient',['APIClient',['../class_grok_1_1_numenta_1_1_a_p_i_client.html#a1a692a370a05c49d76c8452be90cac71',1,'Grok.Numenta.APIClient.APIClient(string UserAPIKey)'],['../class_grok_1_1_numenta_1_1_a_p_i_client.html#a5e0456904ba82ca5195f70ec1158c7f0',1,'Grok.Numenta.APIClient.APIClient(string UserAPIKey, string ConnectionURL)']]],
   ['apiclient',['APIClient',['../class_grok_1_1_numenta_1_1_a_p_i_client.html',1,'Grok::Numenta']]],
   ['apiexception',['APIException',['../class_grok_1_1_numenta_1_1_a_p_i_exception.html',1,'Grok::Numenta']]],

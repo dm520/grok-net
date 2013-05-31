@@ -1,5 +1,8 @@
 var NAVTREEINDEX1 =
 {
+"class_grok_1_1_numenta_1_1_time_aggregation.html#a35542ceaa831d717cb6bc7755da09812":[1,0,0,0,10,24],
+"class_grok_1_1_numenta_1_1_time_aggregation.html#a3c2a7063e5129e3168e30ed1da40d8c0":[1,0,0,0,10,20],
+"class_grok_1_1_numenta_1_1_time_aggregation.html#a473f5026d1bb48b2521eb782d185e76d":[1,0,0,0,10,13],
 "class_grok_1_1_numenta_1_1_time_aggregation.html#a4989b3dda120fd6a9ef3f6b68fcab9e6":[1,0,0,0,10,0],
 "class_grok_1_1_numenta_1_1_time_aggregation.html#a4b9708d060507cdcd93fa77353468f10":[1,0,0,0,10,9],
 "class_grok_1_1_numenta_1_1_time_aggregation.html#a52eb158839541bb3a489542564313e73":[1,0,0,0,10,23],
