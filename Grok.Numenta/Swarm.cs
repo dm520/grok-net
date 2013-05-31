@@ -14,11 +14,8 @@ using Newtonsoft.Json.Linq;
 
 namespace Grok.Numenta
 {
-    /// <summary>
-    /// Author: Jared Casner
-    /// Last Updated: 19 November 2012
-    /// Class: Swarm
-    /// Description: The <code>Swarm</code> class represents a Swarm.
+    /// <summary>    
+    /// The Swarm class represents a Swarm.
     /// It can be used to perform basic retrieval and update operations.
     /// </summary>
     [JsonObject(MemberSerialization.OptIn)]
@@ -86,19 +83,16 @@ namespace Grok.Numenta
         #endregion Private Members and Accessors
 
         #region Constructors
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: Swarm
-        /// Description: Default Constructor
+        /// <summary>        
+        /// Default Constructor
         /// </summary>
         public Swarm() { }
 
         /// <summary>
         ///  Author: Jared Casner
-        /// Last Updated: 20 December 2012
-        /// Method: CreateSwarm
-        /// Description: Deserialize a JSON Object from the API into a Swarm object
+        
+        
+        /// Deserialize a JSON Object from the API into a Swarm object
         /// </summary>
         /// <param name="Client"></param>
         /// <param name="JSONObject"></param>
@@ -132,9 +126,9 @@ namespace Grok.Numenta
         #region Helper Methods
         /// <summary>
         ///  Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: Retrieve
-        /// Description: Returns a Swarm from the API given the URL
+        
+        
+        /// Returns a Swarm from the API given the URL
         /// </summary>
         /// <returns></returns>
         public Swarm Retrieve() 

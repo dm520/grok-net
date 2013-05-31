@@ -16,11 +16,8 @@ using CsvHelper;
 
 namespace Grok.Numenta
 {
-    /// <summary>
-    /// Author: Jared Casner
-    /// Last Updated: 20 November 2012
-    /// Class: DataTable
-    /// Description: Represents a Grok DataTable as returned in the /data feeds
+    /// <summary>    
+    /// Represents a Grok DataTable as returned in the /data feeds
     /// </summary>
     public class DataTable
     {
@@ -53,11 +50,8 @@ namespace Grok.Numenta
             set { _Data = value; }
         }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 05 December 2012
-        /// Method: [string Key]
-        /// Description: Returns a List representing a data column for the index of a specific key value
+        /// <summary>        
+        /// Returns a List representing a data column for the index of a specific key value
         /// </summary>
         /// <param name="Key"></param>
         /// <returns></returns>
@@ -69,11 +63,8 @@ namespace Grok.Numenta
             }
         }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 05 December 2012
-        /// Method: [int Index]
-        /// Description: Returns a List representing a data column for the index
+        /// <summary>        
+        /// Returns a List representing a data column for the index
         /// </summary>
         /// <param name="Index"></param>
         /// <returns></returns>
@@ -111,16 +102,18 @@ namespace Grok.Numenta
         /// Contains the index of the field representing the Predicted Field Actual value for this DataTable
         /// </summary>
         public int PredictedFieldIndex { get; set; }
+       
+        /// <summary>
+        /// Contains the index of the field representing the anomaly score for this DataTable
+        /// </summary>
+        public int AnomalyScoreFieldIndex { get; set; }
 
         #endregion Accessors
         #endregion Members and Accessors
 
         #region Constructors
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 20 November 2012
-        /// Method: DataTable
-        /// Description: Constructor that takes a JSON Object representing a DataTable
+        /// <summary>        
+        /// Constructor that takes a JSON Object representing a DataTable
         /// </summary>
         /// <param name="JSONObject"></param>
 	    public DataTable(JObject JSONObject) 
@@ -169,6 +162,10 @@ namespace Grok.Numenta
                         {
                             PredictionFieldIndex = Meta["predictedFieldPredictionIndex"].Value<int>();
                         }
+                        if (Meta["anomalyScoreFieldIndex"] != null)
+                        {
+                            AnomalyScoreFieldIndex = Meta["anomalyScoreFieldIndex"].Value<int>();
+                        }
                     }
                 }
 		    } 
@@ -178,20 +175,14 @@ namespace Grok.Numenta
 		    }
 	    }
 	
-	    /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 20 November 2012
-        /// Method: DataTable
-        /// Description: Creates a new DataTable based on a CSV File
+	    /// <summary>        
+        /// Creates a new DataTable based on a CSV File
 	    /// </summary>
 	    /// <param name="InputFile"></param>
         public DataTable(FileInfo InputFile) : this(InputFile, false) { }
 	
-	    /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 20 November 2012
-        /// Method: DataTable
-        /// Description: Creates a new DataTable based on a CSV File
+	    /// <summary>        
+        /// Creates a new DataTable based on a CSV File
 	    /// </summary>
 	    /// <param name="InputFile"></param>
 	    /// <param name="HasHeaders"></param>
@@ -199,16 +190,15 @@ namespace Grok.Numenta
 
         /// <summary>
         /// 
+        /// Creates a new DataTable based on a CSV File
         /// </summary>
         /// <param name="InputFile"></param>
         /// <param name="HasHeaders"></param>
         /// <param name="MaxRows"></param>
         public DataTable(FileInfo InputFile, bool HasHeaders, int MaxRows) : this(InputFile, HasHeaders, MaxRows, 0) { }
-	    /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 December 2012
-        /// Method: DataTable
-        /// Description: Creates a new DataTable based on a CSV File
+
+	    /// <summary>        
+        /// Creates a new DataTable based on a CSV File
 	    /// </summary>
 	    /// <param name="InputFile"></param>
 	    /// <param name="HasHeaders"></param>
@@ -232,13 +222,16 @@ namespace Grok.Numenta
                 else 
                 {
 		    	    this.Names = null;
-                    Data.Add(Reader.FieldHeaders);
+                    Data.Add((from val in Reader.FieldHeaders select string.IsNullOrEmpty(val) ? null : val).ToArray());
+                    Data.Add((from val in Reader.CurrentRecord select string.IsNullOrEmpty(val) ? null : val).ToArray());
 		        }
                 for (int i = 0; i < SkipRows; i++)
                     Reader.Read();
 
                 while (Reader.Read() && Data.Count < MaxRows)
-                    Data.Add(Reader.CurrentRecord);
+                {
+                    Data.Add((from val in Reader.CurrentRecord select string.IsNullOrEmpty(val) ? null : val).ToArray());
+                }
 		    } 
             catch (IOException ex) 
             {
@@ -261,24 +254,19 @@ namespace Grok.Numenta
 		    }
 	    }
 	
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 20 November 2012
-        /// Method: DataTable
-        /// Description: Creates a new DataTable based on a 2-D string array
+        /// <summary>        
+        /// Creates a new DataTable based on a 2-D string array
         /// </summary>
         /// <param name="InputData"></param>
 	    public DataTable(string[][] InputData) 
         {
 		    this.Names = null;
-            this.Data = InputData.OfType<string[]>().ToList();
+            foreach (string[] currentRecord in InputData)
+                this.Data.Add((from val in currentRecord select string.IsNullOrEmpty(val) ? null : val).ToArray());
 	    }
 	    
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 20 November 2012
-        /// Method: DataTable
-        /// Description: Creates an empty data table
+        /// <summary>        
+        /// Creates an empty data table
         /// </summary>
 	    public DataTable() 
         {
@@ -288,11 +276,8 @@ namespace Grok.Numenta
         #endregion Constructors
 
         #region Helper Methods
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 20 November 2012
-        /// Method: DataTable
-        /// Description: Gets the last row's ID.
+        /// <summary>        
+        /// Gets the last row's ID.
         /// Note: This assumes the Grok output format, where the first column is an integer identifier.
         /// </summary>
         /// <returns></returns>
@@ -312,11 +297,8 @@ namespace Grok.Numenta
 		    return result;
 	    }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 20 November 2012
-        /// Method: DataTable
-        /// Description: Writes the data table out to the specified file in CSV format.
+        /// <summary>        
+        /// Writes the data table out to the specified file in CSV format.
         /// </summary>
         /// <param name="OutputFile"></param>
 	    public void WriteCSV(FileInfo OutputFile) 

@@ -13,11 +13,8 @@ using Newtonsoft.Json.Linq;
 
 namespace Grok.Numenta
 {
-    /// <summary>
-    /// Author: Jared Casner
-    /// Last Updated: 19 November 2012
-    /// Class: User
-    /// Description: The <code>User</code> class represents a user account.
+    /// <summary>    
+    /// The User class represents a user account.
     /// It can be used to perform basic retrieval and update operations.
     /// Every valid API key is associated with at least one user account.
     /// </summary>
@@ -129,11 +126,8 @@ namespace Grok.Numenta
         #endregion Members and Accessors
         
         #region User Methods
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: CreateUser
-        /// Description: Creates a new user based on API client and JSON representation.
+        /// <summary>        
+        /// Creates a new user based on API client and JSON representation.
         /// This constructor is intended to be used only be the API client directly.
         /// </summary>
         /// <param name="Client"></param>
@@ -154,22 +148,16 @@ namespace Grok.Numenta
             }
         }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: Update
-        /// Description: Calls into the API to update the User record
+        /// <summary>        
+        /// Calls into the API to update the User record
         /// </summary>
         public void Update()
         {
             UserAPIClient.UpdateUser(this);
         }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: ToJSON
-        /// Description: Returns a JSON representation of the User
+        /// <summary>        
+        /// Returns a JSON representation of the User
         /// </summary>
         /// <returns>A JSON Representation of the User that can be fed into the Grok REST API</returns>
         public JObject ToJSON()
@@ -190,9 +178,9 @@ namespace Grok.Numenta
         #region User Projects
         /// <summary>
         ///Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: CreateProject
-        /// Description:  Creates a new project from a Project object
+        
+        
+        ///  Creates a new project from a Project object
         /// </summary>
         /// <param name="project"></param>
         /// <returns></returns>
@@ -201,11 +189,8 @@ namespace Grok.Numenta
             return UserAPIClient.CreateProject(this.projectsUrl, NewProject);
         }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: CreateProject
-        /// Description: Create an empty Project with the given name
+        /// <summary>        
+        /// Create an empty Project with the given name
         /// </summary>
         /// <param name="ProjectName"></param>
         /// <returns></returns>
@@ -216,11 +201,8 @@ namespace Grok.Numenta
             return UserAPIClient.CreateProject(this.projectsUrl, NewProject);
         }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: RetrieveProjects
-        /// Description: Calls into the API to return the list of Projects for a User account
+        /// <summary>        
+        /// Calls into the API to return the list of Projects for a User account
         /// </summary>
         /// <returns></returns>
         public List<Project> RetrieveProjects()
@@ -230,11 +212,8 @@ namespace Grok.Numenta
         #endregion User Projects
 
         #region User Streams
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: RetrieveStreams
-        /// Description: Calls into the API to retrieve a list of Streams for the User account that are not associated to Projects
+        /// <summary>        
+        /// Calls into the API to retrieve a list of Streams for the User account that are not associated to Projects
         /// </summary>
         /// <returns></returns>
         public List<Stream> RetrieveStreams()
@@ -242,11 +221,8 @@ namespace Grok.Numenta
             return UserAPIClient.RetrieveStreams(this.streamsUrl);
         }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: RetrieveAllStreams
-        /// Description: Calls into the API to retrieve a list of Streams for the User account, irrespective of association to Projects
+        /// <summary>        
+        /// Calls into the API to retrieve a list of Streams for the User account, irrespective of association to Projects
         /// </summary>
         /// <returns></returns>
         public List<Stream> RetrieveAllStreams()

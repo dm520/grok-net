@@ -15,15 +15,16 @@ using Newtonsoft.Json.Linq;
 
 namespace Grok.Numenta
 {
-    /// <summary>
-    /// Author: Jared Casner
-    /// Last Updated: 03 January 2013
-    /// Class: Model
-    /// Description: Represents a Grok Model
+    /// <summary>    
+    /// Represents a Grok Model
     /// </summary>
     [JsonObject(MemberSerialization.OptIn)]
     public class Model
     {
+        public enum ComputeInterval {
+            Years, Months, Weeks, Days, Hours, Minutes, Seconds, Milliseconds  
+        }
+
         #region Members and Accessors
         #region Member Variables
         public const string COMMAND_SWARM = "swarm";
@@ -41,6 +42,8 @@ namespace Grok.Numenta
         public const string COMMAND_GET_LABELS = "getLabels";
         public const string COMMAND_SET_ANOMALY_THRESHOLD = "setAutoDetectThreshold";
         public const string COMMAND_GET_ANOMALY_THRESHOLD = "getAutoDetectThreshold";
+        public const string COMMAND_SET_ANOMALY_WAIT_RECORDS = "setAutoDetectWaitRecords";
+        public const string COMMAND_GET_ANOMALY_WAIT_RECORDS = "getAutoDetectWaitRecords";
 
 
         public const string TYPE_ANOMALY = "anomalyDetector";
@@ -60,6 +63,7 @@ namespace Grok.Numenta
         private string _CheckpointsURL;
         private string _ProjectID;
         private string _FastSwarmModelID;
+        private string _Learning;
 	    private DateTime _CreatedAt;
 	    private DateTime _LastUpdated;
         private Swarm _LastSwarm;
@@ -67,6 +71,7 @@ namespace Grok.Numenta
 	    private List<int> _PredictionSteps;
 	    private JObject _Parameters;
         private Dictionary<string, Object> _CustomErrorMetric;
+        private JObject _ComputeInterval;
         #endregion Member Variables
 
         #region Accessors
@@ -88,6 +93,13 @@ namespace Grok.Numenta
         {
             get { return _ModelType; }
             set { _ModelType = value; }
+        }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string learning
+        {
+            get { return _Learning; }
+            set { _Learning = value; }
         }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
@@ -172,7 +184,15 @@ namespace Grok.Numenta
             get { return _FastSwarmModelID; }
             set { _FastSwarmModelID = value; }
         }
-
+        /// <summary>
+        /// Whether or not the model is learning from new data
+        /// </summary>
+        /// <returns></returns>
+        [JsonIgnore]
+        public bool isLearning
+        {
+            get {  return _Learning == "enabled"; }   
+        }
         [JsonIgnore]
         public DateTime createdAt
         {
@@ -229,15 +249,37 @@ namespace Grok.Numenta
         {
             aggregation = new TimeAggregation(AggregationInterval);
         }
+
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public JObject compute
+        {
+            get { return _ComputeInterval; }
+            set { _ComputeInterval = value; }
+        }
+        /// <summary>
+        /// Defines the interval at which Grok will to make predictions.
+        /// 
+        /// This is closely tied to aggregation interval. If you have input records
+        /// every 15 minutes, and aggregate hourly, by default you will get a
+        /// prediction every four records you send in. If you only need a prediction
+        /// every 4 hours you would set a compute interval of four hours and you
+        /// would then get one prediction for every 16 records you sent in.
+        /// interval = {'hours': 4}
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="interval">ComputeInterval enumeration</param>
+        public void SetComputeInterval(int value, ComputeInterval interval)
+        {
+            compute = JObject.Parse(@"{""interval"":{"""+interval.ToString().ToLower()+@""":"+value+@"}}");
+        }
+
         #endregion Accessors
         #endregion Private Members and Accessors
 
         #region Constructors
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: CreateModel
-        /// Description: Creates a Model from a JSON Object (e.g.: from the API)
+        /// <summary>        
+        /// Creates a Model from a JSON Object (e.g.: from the API)
         /// </summary>
         /// <param name="Client"></param>
         /// <param name="JSONObject"></param>
@@ -324,6 +366,41 @@ namespace Grok.Numenta
             }
             return Double.NaN;
         }
+
+        /// <summary>
+        /// This property specifies the number of records to wait until the model
+        /// begins to automatically flag anomalies above the threshold. 
+        /// This allows the model to wait until after the initial learning is done and
+        /// the anomaly scores settle down.
+        /// This defaults to the number of post-aggregated records in the stream at the start of the swarm
+        /// </summary>
+        public void SetAutoDetectWaitRecords(int records)
+        {
+            var parameters = new Dictionary<String, String>();
+            parameters["autoDetectWaitRecords"] = records.ToString();
+            ModelAPIClient.SendModelCommand(this,  COMMAND_SET_ANOMALY_WAIT_RECORDS, parameters); 
+        }
+        /// <summary>
+        /// This property specifies the number of records to wait until the model
+        /// begins to automatically flag anomalies above the threshold. 
+        /// This allows the model to wait until after the initial learning is done and
+        /// the anomaly scores settle down.
+        /// This defaults to the number of post-aggregated records in the stream at the start of the swarm
+        /// </summary>
+        public int GetAutoDetectWaitRecords()
+        {
+            JObject response = ModelAPIClient.SendModelCommand(this, COMMAND_GET_ANOMALY_WAIT_RECORDS);
+            if (response["error"] != null)
+            {
+                throw new APIException(response["error"].ToString());
+            }
+            if (response["autoDetectWaitRecords"] != null)
+            {
+                return response["autoDetectWaitRecords"].Value<int>();
+            }         
+            return -1;
+        }
+
         /// <summary>
         /// This method adds the label ‘labelName’ to each point within the range [startRecord, endRecord].
         /// </summary>
@@ -428,12 +505,10 @@ namespace Grok.Numenta
         }
         
         #endregion
+        
         #region Model Swarm Methods
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: CreateSwarm
-        /// Description: Creates a Swarm for the Model
+        /// <summary>        
+        /// Creates a Swarm for the Model
         /// </summary>
         /// <returns></returns>
         public Swarm CreateSwarm()
@@ -441,11 +516,8 @@ namespace Grok.Numenta
             return ModelAPIClient.CreateSwarm(this.swarmsUrl);
         }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: CreateSwarm
-        /// Description: Sends a command to the API to start swarming the model and return the given Swarm
+        /// <summary>        
+        /// Sends a command to the API to start swarming the model and return the given Swarm
 	    /// </summary>
 	    /// <param name="ParamsToSwarmOn"></param>
 	    /// <returns></returns>
@@ -453,20 +525,16 @@ namespace Grok.Numenta
         {
 		    try 
             {
-                JObject JSONResponse = ModelAPIClient.SendModelCommand(this.commandsUrl, COMMAND_SWARM, ParamsToSwarmOn);
-                return Swarm.CreateSwarm(ModelAPIClient, JSONResponse);		
-		    } 
+                return ModelAPIClient.CreateSwarm(this.swarmsUrl, ParamsToSwarmOn);
+ 		    } 
             catch (Exception ex) 
             {
 			    throw new APIException("Failed to swarm model", ex);
 		    }
 	    }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: CreateSwarm
-        /// Description: Sends a command to the API to start swarming the model and return the given Swarm
+        /// <summary>        
+        /// Sends a command to the API to start swarming the model and return the given Swarm
 	    /// </summary>
         /// <param name="ParamsToSwarmOn"></param>
 	    /// <returns></returns>
@@ -474,9 +542,7 @@ namespace Grok.Numenta
         {
 		    try 
             {
-			    JObject JSONResponse = ModelAPIClient.SendModelCommand(this, COMMAND_SWARM, ParamsToSwarmOn);
-                return Swarm.CreateSwarm(ModelAPIClient, JSONResponse);
-		
+                return ModelAPIClient.CreateSwarm(this.swarmsUrl, ParamsToSwarmOn);		
 		    } 
             catch (Exception ex) 
             {
@@ -484,11 +550,8 @@ namespace Grok.Numenta
 		    }
 	    }
 	
-	    /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: CreateSwarm
-        /// Description: Sends a command to the API to start swarming the model and return the given Swarm
+	    /// <summary>        
+        /// Sends a command to the API to start swarming the model and return the given Swarm
 	    /// </summary>
 	    /// <param name="SwarmSize"></param>
 	    /// <returns></returns>
@@ -499,11 +562,8 @@ namespace Grok.Numenta
 		    return SwarmModel(Parameters);
 	    }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: CreateSwarm
-        /// Description: Sends a command to the API to start swarming the model and return the given Swarm
+        /// <summary>        
+        /// Sends a command to the API to start swarming the model and return the given Swarm
         /// </summary>
         /// <returns></returns>
 	    public Swarm SwarmModel() 
@@ -514,22 +574,16 @@ namespace Grok.Numenta
         #endregion Model Swarm Methods
 
         #region Model Promotion Methods
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: Promote
-        /// Description: Sends a command to the API to Promote the Model
+        /// <summary>        
+        /// Sends a command to the API to Promote the Model
         /// </summary>
 	    public void Promote() 
         {
 		    Promote(false);
 	    }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: Promote
-        /// Description: Sends a command to the API to Promote the Model
+        /// <summary>        
+        /// Sends a command to the API to Promote the Model
         /// </summary>
         /// <param name="verbose"></param>
 	    public void Promote(bool verbose) 
@@ -541,22 +595,16 @@ namespace Grok.Numenta
 		    WaitForStabilization(verbose);
 	    }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: Promote
-        /// Description: Sends a command to the API to Promote the Model
+        /// <summary>        
+        /// Sends a command to the API to Promote the Model
         /// </summary>
 	    public void StartPromote() 
         {
 		    ModelAPIClient.SendModelCommand(this, COMMAND_PROMOTE);
 	    }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: Start
-        /// Description: Sends a command to the API to Start the Model
+        /// <summary>        
+        /// Sends a command to the API to Start the Model
         /// </summary>
         public void Start()
         {
@@ -577,35 +625,28 @@ namespace Grok.Numenta
         {
             return ModelAPIClient.CloneModel(this);
         }
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: DisableLearning
-        /// Description: Sends a command to the API to Disable Learning in the Model
+        /// <summary>        
+        /// Sends a command to the API to Disable Learning in the Model
         /// </summary>
         public void DisableLearning()
         {
             ModelAPIClient.SendModelCommand(this, COMMAND_DISABLE_LEARNING);
+            _Learning = "disabled";
         }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: EnableLearning
-        /// Description: Sends a command to the API to enable learning in the Model
+        /// <summary>        
+        /// Sends a command to the API to enable learning in the Model
         /// </summary>
         public void EnableLearning()
         {
             ModelAPIClient.SendModelCommand(this, COMMAND_ENABLE_LEARNING);
+            _Learning = "enabled";
         }
         #endregion Model Promotion Methods
 
         #region Stabilization Methods
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: WaitForStatus
-        /// Description: Pauses execution until the Model reaches a given status
+        /// <summary>        
+        /// Pauses execution until the Model reaches a given status
         /// </summary>
         /// <param name="Status"></param>
 	    public void WaitForStatus(string Status) 
@@ -613,11 +654,8 @@ namespace Grok.Numenta
 		    WaitForStatus(Status, false);
 	    }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: WaitForStatus
-        /// Description: Pauses execution until the Model reaches a given status
+        /// <summary>        
+        /// Pauses execution until the Model reaches a given status
         /// </summary>
         /// <param name="Status"></param>
         /// <param name="Verbose"></param>
@@ -636,11 +674,8 @@ namespace Grok.Numenta
 			    Console.WriteLine("Model running!");
 	    }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: WaitForRowId
-        /// Description: Pauses execution until the Model reaches a given Row ID
+        /// <summary>        
+        /// Pauses execution until the Model reaches a given Row ID
         /// </summary>
         /// <param name="RowId"></param>
 	    public void WaitForRowId(int RowId) 
@@ -648,11 +683,8 @@ namespace Grok.Numenta
 		    WaitForRowId(RowId, false);
 	    }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: WaitForRowId
-        /// Description: Pauses execution until the Model reaches a given Row ID
+        /// <summary>        
+        /// Pauses execution until the Model reaches a given Row ID
         /// </summary>
         /// <param name="RowId"></param>
         /// <param name="Verbose"></param>
@@ -670,21 +702,15 @@ namespace Grok.Numenta
 			    Console.WriteLine("Model caught up!");
 	    }
 	
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: WaitForStabilization
-        /// Description: Pauses execution until the Model fully stabilizes
+        /// <summary>        
+        /// Pauses execution until the Model fully stabilizes
         /// </summary>
 	    public void WaitForStabilization() {
 		    WaitForStabilization(false);
 	    }
 	
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 03 January 2013
-        /// Method: WaitForStabilization
-        /// Description: Pauses execution until the Model fully stabilizes
+        /// <summary>        
+        /// Pauses execution until the Model fully stabilizes
         /// </summary>
         /// <param name="Verbose"></param>
 	    public void WaitForStabilization(bool Verbose)
@@ -732,11 +758,8 @@ namespace Grok.Numenta
         #endregion Stabilization Methods
 
         #region RetrieveData Methods
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: RetrieveData
-        /// Description: Retrieves the data from the Model
+        /// <summary>        
+        /// Retrieves the data from the Model
         /// </summary>
         /// <returns></returns>
 	    public DataTable RetrieveData() 
@@ -744,11 +767,8 @@ namespace Grok.Numenta
 		    return ModelAPIClient.RetrieveOutputData(this.dataUrl);
 	    }
 	
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: RetrieveData
-        /// Description: Retrieves the data from the Model, limiting the ouptut to a specified number of rows
+        /// <summary>        
+        /// Retrieves the data from the Model, limiting the ouptut to a specified number of rows
         /// </summary>
         /// <param name="Limit"></param>
         /// <returns></returns>
@@ -757,11 +777,8 @@ namespace Grok.Numenta
 		    return RetrieveData(-1, Limit, false);
 	    }
 	
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: RetrieveData
-        /// Description: Retrieves the data from the Model, shifting the output to have the predictions line up with the Actual values
+        /// <summary>        
+        /// Retrieves the data from the Model, shifting the output to have the predictions line up with the Actual values
         /// </summary>
         /// <param name="shift"></param>
         /// <returns></returns>
@@ -770,11 +787,8 @@ namespace Grok.Numenta
 		    return RetrieveData(-1, -1, Shift);
 	    }
 	
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: RetrieveData
-        /// Description: Retrieves the data from the Model, limiting the output and shifting the predictions to line up with the actuals
+        /// <summary>        
+        /// Retrieves the data from the Model, limiting the output and shifting the predictions to line up with the actuals
         /// </summary>
         /// <param name="Limit"></param>
         /// <param name="Shift"></param>
@@ -784,11 +798,8 @@ namespace Grok.Numenta
 		    return RetrieveData(-1, Limit, Shift);
 	    }
 	
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: RetrieveData
-        /// Description: Retrieves the data from the Model, limiting the output and shifting the predictions to line up with the actuals, and starting from a specific Row ID (Offset)
+        /// <summary>        
+        /// Retrieves the data from the Model, limiting the output and shifting the predictions to line up with the actuals, and starting from a specific Row ID (Offset)
         /// </summary>
         /// <param name="Offset"></param>
         /// <param name="Limit"></param>
@@ -799,11 +810,8 @@ namespace Grok.Numenta
 		    return ModelAPIClient.RetrieveOutputData(BuildDataUrl(Offset, Limit, Shift));
 	    }
 	
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: BuildDataUrl
-        /// Description: Builds the Model Data URL from the model URL given the specified inputs
+        /// <summary>        
+        /// Builds the Model Data URL from the model URL given the specified inputs
         /// </summary>
         /// <param name="Offset"></param>
         /// <param name="Limit"></param>
@@ -835,11 +843,8 @@ namespace Grok.Numenta
         #endregion RetrieveData Methods
 
         #region Helper Methods
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: ToJSON
-        /// Description: Serialize the Model to JSON for use in the API
+        /// <summary>        
+        /// Serialize the Model to JSON for use in the API
         /// </summary>
         /// <returns></returns>
 	    public JObject ToJSON()

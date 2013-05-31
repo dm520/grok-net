@@ -14,11 +14,8 @@ using Newtonsoft.Json.Linq;
 
 namespace Grok.Numenta
 {
-    /// <summary>
-    /// Author: Jared Casner
-    /// Last Updated: 19 November 2012
-    /// Class: Stream
-    /// Description: The <code>Stream</code> class represents a Stream.
+    /// <summary>    
+    /// The Stream class represents a Stream.
     /// It can be used to perform basic retrieval and update operations.
     /// </summary>
     [JsonObject(MemberSerialization.OptIn)]
@@ -119,11 +116,8 @@ namespace Grok.Numenta
         #endregion Private Members and Accessors
 
         #region Stream Methods
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: CreateStream
-        /// Description: Create a Stream locally from a JSON Object
+        /// <summary>        
+        /// Create a Stream locally from a JSON Object
         /// </summary>
         /// <param name="Client"></param>
         /// <param name="JSONObject"></param>
@@ -143,11 +137,8 @@ namespace Grok.Numenta
             }
         }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: ToJSON
-        /// Description: Serialize the project object, wrapping it in a "stream" group
+        /// <summary>        
+        /// Serialize the project object, wrapping it in a "stream" group
         /// </summary>
         /// <returns></returns>
         public JObject ToJSON()
@@ -166,11 +157,8 @@ namespace Grok.Numenta
         #endregion Stream Methods
 
         #region AppendData Methods
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: AppendData
-        /// Description: Append data records to an existing Stream
+        /// <summary>        
+        /// Append data records to an existing Stream
         /// </summary>
         /// <param name="data"></param>
         public void AppendData(List<String[]> data)
@@ -178,11 +166,8 @@ namespace Grok.Numenta
             StreamAPIClient.AppendData(this.dataUrl, data);
         }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: AppendData
-        /// Description: Append data records to an existing Stream
+        /// <summary>        
+        /// Append data records to an existing Stream
         /// </summary>
         /// <param name="data"></param>
         /// <param name="callback"></param>
@@ -191,11 +176,8 @@ namespace Grok.Numenta
             StreamAPIClient.AppendData(this.dataUrl, data, callback);
         }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: AppendData
-        /// Description: Append data records to an existing Stream
+        /// <summary>        
+        /// Append data records to an existing Stream
         /// </summary>
         /// <param name="NewData"></param>
         public void AppendData(DataTable NewData)
@@ -203,11 +185,8 @@ namespace Grok.Numenta
             AppendData(NewData.Data);
         }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: AppendData
-        /// Description: Append data records to an existing Stream
+        /// <summary>        
+        /// Append data records to an existing Stream
         /// </summary>
         /// <param name="NewData"></param>
         /// <param name="callback"></param>

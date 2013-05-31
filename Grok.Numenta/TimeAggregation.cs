@@ -17,11 +17,8 @@ using Newtonsoft.Json.Linq;
 
 namespace Grok.Numenta
 {
-    /// <summary>
-    /// Author: Jared Casner
-    /// Last Updated: 19 November 2012
-    /// Class: TimeAggregation
-    /// Description: The <code>Time Aggregation</code> class represents the Aggregation used in a given Model.
+    /// <summary>    
+    /// The TimeAggregation class represents the Aggregation used in a given Model.
     /// </summary>
     public class TimeAggregation
     {
@@ -96,11 +93,8 @@ namespace Grok.Numenta
         #endregion
 
         #region Accessors
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November, 2012
-        /// Method: GetSeconds
-        /// Description: Returns the number of seconds in the aggregation interval.
+        /// <summary>        
+        /// Returns the number of seconds in the aggregation interval.
         /// </summary>
         /// <returns></returns>
         public int GetSeconds()
@@ -108,11 +102,8 @@ namespace Grok.Numenta
             return GetUnits(INTERVAL_SECONDS);
         }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November, 2012
-        /// Method: SetSeconds
-        /// Description: Sets the number of seconds in the aggregation interval.
+        /// <summary>        
+        /// Sets the number of seconds in the aggregation interval.
         /// </summary>
         /// <param name="seconds"></param>
         public void SetSeconds(int seconds)
@@ -120,11 +111,8 @@ namespace Grok.Numenta
             SetUnits(INTERVAL_SECONDS, seconds);
         }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November, 2012
-        /// Method: GetMinutes
-        /// Description: Returns the number of minutes in the aggregation interval.
+        /// <summary>        
+        /// Returns the number of minutes in the aggregation interval.
         /// </summary>
         /// <returns></returns>
         public int GetMinutes()
@@ -132,11 +120,8 @@ namespace Grok.Numenta
             return GetUnits(INTERVAL_MINUTES);
         }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November, 2012
-        /// Method: SetMinutes
-        /// Description: Sets the number of minutes in the aggregation interval.
+        /// <summary>        
+        /// Sets the number of minutes in the aggregation interval.
         /// </summary>
         /// <param name="minutes"></param>
         public void SetMinutes(int minutes)
@@ -144,11 +129,8 @@ namespace Grok.Numenta
             SetUnits(INTERVAL_MINUTES, minutes);
         }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November, 2012
-        /// Method: GetHours
-        /// Description: Returns the number of hours in the aggregation interval.
+        /// <summary>        
+        /// Returns the number of hours in the aggregation interval.
         /// </summary>
         /// <returns></returns>
         public int GetHours()
@@ -156,11 +138,8 @@ namespace Grok.Numenta
             return GetUnits(INTERVAL_HOURS);
         }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November, 2012
-        /// Method: SetHours
-        /// Description: Sets the number of hours in the aggregation interval.
+        /// <summary>        
+        /// Sets the number of hours in the aggregation interval.
         /// </summary>
         /// <param name="hours"></param>
         public void SetHours(int hours)
@@ -168,11 +147,8 @@ namespace Grok.Numenta
             SetUnits(INTERVAL_HOURS, hours);
         }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November, 2012
-        /// Method: GetDays
-        /// Description: Returns the number of days in the aggregation interval.
+        /// <summary>        
+        /// Returns the number of days in the aggregation interval.
         /// </summary>
         /// <returns></returns>
         public int GetDays()
@@ -180,11 +156,8 @@ namespace Grok.Numenta
             return GetUnits(INTERVAL_DAYS);
         }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November, 2012
-        /// Method: SetDays
-        /// Description: Sets the number of days in the aggregation interval.
+        /// <summary>        
+        /// Sets the number of days in the aggregation interval.
         /// </summary>
         /// <param name="days"></param>
         public void SetDays(int days)
@@ -192,11 +165,8 @@ namespace Grok.Numenta
             SetUnits(INTERVAL_DAYS, days);
         }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November, 2012
-        /// Method: GetWeeks
-        /// Description: Returns the number of weeks in the aggregation interval.
+        /// <summary>        
+        /// Returns the number of weeks in the aggregation interval.
         /// </summary>
         /// <returns></returns>
         public int GetWeeks()
@@ -204,11 +174,8 @@ namespace Grok.Numenta
             return GetUnits(INTERVAL_WEEKS);
         }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November, 2012
-        /// Method: SetWeeks
-        /// Description: Returns the number of weeks in the aggregation interval.
+        /// <summary>        
+        /// Returns the number of weeks in the aggregation interval.
         /// </summary>
         /// <param name="weeks"></param>
         public void SetWeeks(int weeks)
@@ -216,11 +183,8 @@ namespace Grok.Numenta
             SetUnits(INTERVAL_WEEKS, weeks);
         }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November, 2012
-        /// Method: GetMonths
-        /// Description: Returns the number of months in the aggregation interval.
+        /// <summary>        
+        /// Returns the number of months in the aggregation interval.
         /// </summary>
         /// <returns></returns>
         public int GetMonths()
@@ -228,11 +192,8 @@ namespace Grok.Numenta
             return GetUnits(INTERVAL_MONTHS);
         }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November, 2012
-        /// Method: SetMonths
-        /// Description: Sets the number of months in the aggregation interval.
+        /// <summary>        
+        /// Sets the number of months in the aggregation interval.
         /// </summary>
         /// <param name="months"></param>
         public void SetMonths(int months)
@@ -240,11 +201,8 @@ namespace Grok.Numenta
             SetUnits(INTERVAL_MONTHS, months);
         }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November, 2012
-        /// Method: GetUnits
-        /// Description: Private method to return a specific unit of aggregation from the dictionary
+        /// <summary>        
+        /// Private method to return a specific unit of aggregation from the dictionary
         /// </summary>
         /// <param name="Name"></param>
         /// <returns></returns>
@@ -253,11 +211,8 @@ namespace Grok.Numenta
             return interval[Name];
         }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November, 2012
-        /// Method: SetUnits
-        /// Description: Private method to set a specific unit of aggregation from the dictionary
+        /// <summary>        
+        /// Private method to set a specific unit of aggregation from the dictionary
         /// </summary>
         /// <param name="Name"></param>
         /// <param name="Value"></param>
@@ -276,11 +231,8 @@ namespace Grok.Numenta
             }
         }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November, 2012
-        /// Method: Interval Accessor
-        /// Description: Accessor methods to set and retrieve the aggregation interval
+        /// <summary>        
+        /// Accessor methods to set and retrieve the aggregation interval
         /// </summary>
         [JsonProperty]
         public Dictionary<string, int> interval
@@ -294,11 +246,8 @@ namespace Grok.Numenta
             set { _Interval = value; }
         }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November, 2012
-        /// Method: FieldOverride Accessor
-        /// Description: Accessor method to set and retrieve the aggregation field overrides
+        /// <summary>        
+        /// Accessor method to set and retrieve the aggregation field overrides
         /// </summary>
         [JsonProperty("fields")]
         public List<string[]> FieldOverrides
@@ -315,19 +264,13 @@ namespace Grok.Numenta
         #endregion Members and Accessors
 
         #region Constructors
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: TimeAggregation
-        /// Description: Default constructor
+        /// <summary>        
+        /// Default constructor
         /// </summary>
         public TimeAggregation() { }
 
-	    /// <summary>
-	    /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: TimeAggregation
-        /// Description: Constructor that takes an Interval string (e.g.: hours) and creates a new window of a single unit.
+	    /// <summary>        
+        /// Constructor that takes an Interval string (e.g.: hours) and creates a new window of a single unit.
 	    /// </summary>
 	    /// <param name="Interval"></param>
 	    public TimeAggregation(string Interval) 
@@ -335,11 +278,8 @@ namespace Grok.Numenta
             this.interval.Add(Interval, 1);
 	    }
 
-	    /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: TimeAggregation
-        /// Description: Constructor that takes a JSON representation (i.e.: from the REST API) and creates a code representation of the
+	    /// <summary>        
+        /// Constructor that takes a JSON representation (i.e.: from the REST API) and creates a code representation of the
         /// aggregation settings.
 	    /// </summary>
 	    /// <param name="JSONObject"></param>
@@ -376,11 +316,8 @@ namespace Grok.Numenta
         #endregion Constructors
 
         #region Helper Methods
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: ToJSON
-        /// Description: Returns a JSON representation of the Time Aggregation
+        /// <summary>        
+        /// Returns a JSON representation of the Time Aggregation
         /// </summary>
         /// <returns>A JSON Representation of the Time Aggregation that can be fed into the Grok REST API</returns>
 	    public JObject ToJSON() 

@@ -15,11 +15,8 @@ using Newtonsoft.Json.Linq;
 
 namespace Grok.Numenta
 {
-    /// <summary>
-    /// Author: Jared Casner
-    /// Last Updated: 19 November 2012
-    /// Class: Project
-    /// Description: The <code>Project</code> class represents the Project object in the API, a logical 
+    /// <summary>    
+    /// The Project class represents the Project object in the API, a logical 
     /// means of grouping Models and Streams within a User account.
     /// </summary>
     [JsonObject(MemberSerialization.OptIn)]
@@ -102,11 +99,8 @@ namespace Grok.Numenta
         #endregion Members and Accessors
 
         #region Project Stream Methods
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: CreateStream
-        /// Description: Calls out to the API to create a new Stream in the Project from a given Stream object
+        /// <summary>        
+        /// Calls out to the API to create a new Stream in the Project from a given Stream object
 	    /// </summary>
 	    /// <param name="NewStream"></param>
 	    /// <returns></returns>
@@ -115,11 +109,8 @@ namespace Grok.Numenta
 		    return ProjectAPIClient.CreateStream(this.streamsUrl, NewStream);
 	    }
 	
-	    /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: RetrieveStreams
-        /// Description: Calls out to the API to retrieve a list of Streams in the Project
+	    /// <summary>        
+        /// Calls out to the API to retrieve a list of Streams in the Project
 	    /// </summary>
 	    /// <returns></returns>
 	    public List<Stream> RetrieveStreams()
@@ -129,11 +120,8 @@ namespace Grok.Numenta
         #endregion Project Stream Methods
 
         #region Project Model Methods
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: CreateModel
-        /// Description: Calls out to the API to create a new Model in the Project from a given Model object
+        /// <summary>        
+        /// Calls out to the API to create a new Model in the Project from a given Model object
 	    /// </summary>
 	    /// <param name="model"></param>
 	    /// <returns></returns>
@@ -142,11 +130,8 @@ namespace Grok.Numenta
 		    return ProjectAPIClient.CreateModel(this.modelsUrl, NewModel);
 	    }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: RetrieveModels
-        /// Description: Calls out to the API to retrieve a list of Models in the Project
+        /// <summary>        
+        /// Calls out to the API to retrieve a list of Models in the Project
 	    /// </summary>
 	    /// <returns></returns>
 	    public List<Model> RetrieveModels()
@@ -156,11 +141,8 @@ namespace Grok.Numenta
         #endregion Project Model Methods
 
         #region Project Methods
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: CreateStream
-        /// Description: Create a Project locally from a JSON representation (e.g.: as retrieved from the API)
+        /// <summary>        
+        /// Create a Project locally from a JSON representation (e.g.: as retrieved from the API)
         /// </summary>
         /// <param name="Client"></param>
         /// <param name="JSONObject"></param>
@@ -180,11 +162,8 @@ namespace Grok.Numenta
             }
         }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: ToJSON
-        /// Description: Serialize the project object, wrapping it in a "project" group
+        /// <summary>        
+        /// Serialize the project object, wrapping it in a "project" group
         /// </summary>
         /// <returns></returns>
         public JObject ToJSON()

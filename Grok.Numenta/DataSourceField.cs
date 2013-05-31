@@ -15,11 +15,8 @@ using Newtonsoft.Json.Linq;
 
 namespace Grok.Numenta
 {
-    /// <summary>
-    /// Author: Jared Casner
-    /// Last Updated: 18 December 2012
-    /// Class: DataSourceField
-    /// Description: Represents a single field in the DataSources of a Stream.
+    /// <summary>    
+    /// Represents a single field in the DataSources of a Stream.
     /// </summary>
     public class DataSourceField
     {
@@ -108,38 +105,26 @@ namespace Grok.Numenta
         #endregion Members and Accessors
 
         #region Constructors
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: DataSourceField
-        /// Description: Default Constructor
+        /// <summary>        
+        /// Default Constructor
         /// </summary>
 	    public DataSourceField() { }
 	
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: DataSourceField
-        /// Description: Constructor for a new SCALAR field
+        /// <summary>        
+        /// Constructor for a new SCALAR field
         /// </summary>
         /// <param name="Name"></param>
 	    public DataSourceField(string Name) : this(Name, DataSourceField.TYPE_SCALAR) { }
 	
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: DataSourceField
-        /// Description: Constructor for a new field
+        /// <summary>        
+        /// Constructor for a new field
         /// </summary>
         /// <param name="Name"></param>
         /// <param name="DataType"></param>
 	    public DataSourceField(string Name, string DataType) : this(Name, DataType, DataSourceField.FLAG_NONE) { } 
 	
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: DataSourceField
-        /// Description: Constructor for a new field with a Flag
+        /// <summary>        
+        /// Constructor for a new field with a Flag
         /// </summary>
         /// <param name="Name"></param>
         /// <param name="DataType"></param>
@@ -151,11 +136,8 @@ namespace Grok.Numenta
 		    this.flag = flag;
 	    }
 	
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: DataSourceField
-        /// Description: Constructor for a new SCALAR field with MIN and MAX values
+        /// <summary>        
+        /// Constructor for a new SCALAR field with MIN and MAX values
         /// </summary>
         /// <param name="Name"></param>
         /// <param name="Min"></param>
@@ -169,11 +151,8 @@ namespace Grok.Numenta
 		    this.max = Max;
 	    }
 	
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: DataSourceField
-        /// Description: Constructor for a new DataSourceField from a JSON Object (e.g.: from the API)
+        /// <summary>        
+        /// Constructor for a new DataSourceField from a JSON Object (e.g.: from the API)
         /// </summary>
         /// <param name="JSONObject"></param>
 	    public DataSourceField(JObject JSONObject) 
@@ -198,11 +177,8 @@ namespace Grok.Numenta
         #endregion Constructors
 
         #region Helper Methods
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: ToJSON
-        /// Description: Returns a JSON representation of a DataSourceField for use in the API
+        /// <summary>        
+        /// Returns a JSON representation of a DataSourceField for use in the API
         /// </summary>
         /// <returns></returns>
         public JObject ToJSON()

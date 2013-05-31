@@ -14,11 +14,8 @@ using Newtonsoft.Json.Linq;
 
 namespace Grok.Numenta
 {
-    /// <summary>
-    /// Author: Jared Casner
-    /// Last Updated: 19 November 2012
-    /// Class: DataSource
-    /// Description: Represents a DataSource in a Stream.
+    /// <summary>    
+    ///Represents a DataSource in a Stream.
     /// </summary>
     public class DataSource
     {
@@ -80,28 +77,19 @@ namespace Grok.Numenta
         #endregion Members and Accessors
 
         #region Constructors
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: DataSource
-        /// Description: Default Constructor
+        /// <summary>        
+        /// Default Constructor
         /// </summary>
         public DataSource() { }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: DataSource
-        /// Description: Creates a new LOCAL DataSource with the given name
+        /// <summary>        
+        /// Creates a new LOCAL DataSource with the given name
         /// </summary>
         /// <param name="Name"></param>
         public DataSource(string Name) : this(Name, TYPE_LOCAL) { }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: DataSource
-        /// Description: Creates a new DataSource with the given name and Type
+        /// <summary>        
+        /// Creates a new DataSource with the given name and Type
         /// </summary>
         /// <param name="strName"></param>
         /// <param name="strDataSourceType"></param>
@@ -111,11 +99,8 @@ namespace Grok.Numenta
             this.dataSourceType = strDataSourceType;
         }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: DataSource
-        /// Description: Creates a new DataSource from a given JSON Object (e.g.: from the API)
+        /// <summary>        
+        /// Creates a new DataSource from a given JSON Object (e.g.: from the API)
         /// </summary>
         /// <param name="client"></param>
         /// <param name="JSONObject"></param>
@@ -146,11 +131,8 @@ namespace Grok.Numenta
         #endregion Constructors
 
         #region Helper Methods
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November 2012
-        /// Method: ToJSON
-        /// Description: Serializes the DataSource as JSON for use with the API
+        /// <summary>        
+        ///Serializes the DataSource as JSON for use with the API
         /// </summary>
         /// <returns></returns>
         public JObject ToJSON() 

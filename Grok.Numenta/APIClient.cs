@@ -23,10 +23,33 @@ using Newtonsoft.Json.Linq;
 namespace Grok.Numenta
 {
     /// <summary>
-    /// Author: Jared Casner
-    /// Last Updated: 18 December, 2012
-    /// Class: APIClient
-    /// Description: Default API Client so that we can connect to Grok
+    /// The APIClient class wraps a connection to the API server and
+    /// provides helper methods to invoke the API.
+    ///
+    /// <h4>About REST</h4>
+    ///
+    /// <p>Many of the <code>APIClient</code> methods take a <code>url</code>
+    /// parameter.  Don't worry!  First of all, there are helper methods that can
+    /// bypass using URLs all together.  Second, if you prefer to use advanced
+    /// REST functionality, you do not need to hunt down URLs or manually
+    /// construct arcane query strings.  The URLs are provided to you be other
+    /// API calls.</p>
+    ///
+    /// <p>For example, to create a model you would invoke <code>CreateModel()</code>,
+    /// which takes a <code>url</code> parameter.  If you wish to create a model in a
+    /// project, you could use <code>project.modelsUrl</code>.  Or, if you wish
+    /// to skip using projects, you could use <code>user.modelsUrl</code>.</p>
+    ///
+    /// <h4>Example</h4>
+    ///
+    /// <p>The following example shows how to create a new <code>APIClient</code>
+    /// and retrieve the default user account associated with the API key.</p>
+    ///
+    /// <pre><code>
+    /// APIClient client = new APIClient(myApiKey);
+    /// User user = client.DefaultUser;
+    /// Console.Write("My name is " + user.firstName);
+    /// </code></pre>
     /// </summary>
     public class APIClient : IAPIClient
     {
@@ -47,12 +70,20 @@ namespace Grok.Numenta
         #endregion Member Data
 
         #region Accessors
+        /// <summary>
+        /// Grok API Key 
+        /// </summary>
         public string APIKey
         {
             get { return _APIKey; }
             set { _APIKey = value; }
         }
-
+        /// <summary>
+        ///The default user object.
+        ///For user account level activities, actions are performed on this account.
+        ///It is initially populated with the first user account that the API key has access to.
+        ///In the common case, this is the only user account for the API key.
+        /// </summary>
         public User DefaultUser
         {
             get
@@ -69,7 +100,9 @@ namespace Grok.Numenta
             get { return _NumentaURI; }
             set { _NumentaURI = value; }
         }
-
+        /// <summary>
+        /// Current API Version
+        /// </summary>
         public string VersionNumber
         {
             get
@@ -79,7 +112,9 @@ namespace Grok.Numenta
                 return _AssemblyVersion.ToString(4);
             }
         }
-
+        /// <summary>
+        /// HTTP Client used to send and receive HTTP requests
+        /// </summary>
         public HttpClient HTTPClient
         {
             get
@@ -122,22 +157,16 @@ namespace Grok.Numenta
 
         #region Constructors
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 20 November, 2012
-        /// Method: APIClient
-        /// Description: Constructor taking the API Key of the User 
+        /// Constructor taking the API Key of the User 
         /// </summary>
-        /// <param name="UserAPIKey"></param>
+        /// <param name="UserAPIKey">The API Key to use</param>
         public APIClient(string UserAPIKey) : this(UserAPIKey, _NumentaURI) { }
 
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 26 November, 2012
-        /// Method: APIClient
-        /// Description: Constructor taking the API Key of the User and a base URL (e.g.: https://api.numenta.com)
+        /// Constructor taking the API Key of the User and a base URL (e.g.: https://api.numenta.com)
         /// </summary>
-        /// <param name="UserAPIKey"></param>
-        /// <param name="ConnectionURL"></param>
+        /// <param name="UserAPIKey">The API Key to use</param>
+        /// <param name="ConnectionURL">The API Server URL to use</param>
         public APIClient(string UserAPIKey, string ConnectionURL)
         {
             try
@@ -167,10 +196,7 @@ namespace Grok.Numenta
 
         #region HTTP Calls
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 11 December, 2012
-        /// Method: Get
-        /// Description: Makes an HTTP GET Call to the specified URL
+        /// Makes an HTTP GET Call to the specified URL
         /// </summary>
         /// <param name="URL">Either an absolute or a relative URL</param>
         /// <returns></returns>
@@ -226,10 +252,7 @@ namespace Grok.Numenta
         }
 
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 11 December, 2012
-        /// Method: PostJSONObject
-        /// Description: Makes an HTTP GET Call to the specified URL to return some JSON
+        /// Makes an HTTP GET Call to the specified URL to return some JSON
         /// </summary>
         /// <param name="URL"></param>
         /// <returns></returns>
@@ -247,13 +270,10 @@ namespace Grok.Numenta
         }
 
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 11 December, 2012
-        /// Method: PostJSONObject
-        /// Description: Makes an HTTP POST Call to the specified URL with an attached JSON object
+        /// Makes an HTTP POST Call to the specified URL with an attached JSON object
         /// </summary>
         /// <param name="URL">Either an absolute or a relative URL</param>
-        /// <param name="Data"></param>
+        /// <param name="Data">JSON Data to post</param>
         /// <returns></returns>
         protected virtual JObject PostJSONObject(string URL, JObject JSONObject)
         {
@@ -261,10 +281,7 @@ namespace Grok.Numenta
         }
 
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 11 December, 2012
-        /// Method: PostJSONObject
-        /// Description: Makes an HTTP POST Call to the specified URL with a payload, which is
+        /// Makes an HTTP POST Call to the specified URL with a payload, which is
         /// assumed to be in a JSON format
         /// </summary>
         /// <param name="URL">Either an absolute or a relative URL</param>
@@ -282,15 +299,12 @@ namespace Grok.Numenta
             else
             {
                 throw new APIException("Failed to connect to " + NumentaURI + " with error " +
-                    (int)response.StatusCode + ":" + response.ReasonPhrase);
+                    (int)response.StatusCode + ":" + response.ReasonPhrase + " - " + response.Content.ReadAsStringAsync().Result);
             }
         }
 
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 18 December, 2012
-        /// Method: DeleteJSONObject
-        /// Description: Deletes a resource at the specified URL.
+        /// Deletes a resource at the specified URL.
         /// </summary>
         /// <param name="URL"></param>
         /// <returns></returns>
@@ -298,7 +312,12 @@ namespace Grok.Numenta
         {
             try
             {
-                return JObject.Parse(Delete(URL));
+                String result = Delete(URL);
+                if (result != null)
+                {
+                    return JObject.Parse(result);
+                }
+                return new JObject();
             }
             catch (Exception ex)
             {
@@ -307,10 +326,7 @@ namespace Grok.Numenta
         }
 
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 26 November, 2012
-        /// Method: Delete
-        /// Description: Deletes the resource at the specified URL.
+        /// Deletes the resource at the specified URL.
         /// </summary>
         /// <param name="url"></param>
         /// <returns></returns>
@@ -325,7 +341,8 @@ namespace Grok.Numenta
 
                     if (response.IsSuccessStatusCode)
                     {
-                        return response.Content.ReadAsStringAsync().Result;
+                        return  response.Content != null ?
+                                response.Content.ReadAsStringAsync().Result : null;
                     }
                     else
                     {
@@ -343,10 +360,7 @@ namespace Grok.Numenta
 
         #region User Methods
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 11 December, 2012
-        /// Method: RetrieveUsers
-        /// Description: retrieves a list of users
+        /// retrieves a list of users
         /// </summary>
         /// <returns></returns>
         public List<User> RetrieveUsers()
@@ -373,10 +387,7 @@ namespace Grok.Numenta
         }
 
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 20 November, 2012
-        /// Method: InitDefaultUser
-        /// Description: Initializes the default user.
+        /// Initializes the default user.
         /// Typically, the API key will only have access to one user account.
         /// This method gets that user account.        
         /// </summary>
@@ -390,10 +401,7 @@ namespace Grok.Numenta
         }
 
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 11 December, 2012
-        /// Method: UpdateUser
-        /// Description: The API expects a JSON Array, so we need to handle that appropriately before serializing
+        /// The API expects a JSON Array, so we need to handle that appropriately before serializing
         /// </summary>
         /// <param name="SingleUser"></param>
         /// <returns></returns>
@@ -414,10 +422,7 @@ namespace Grok.Numenta
 
         #region Project Methods
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 11 December, 2012
-        /// Method: CreateProject
-        /// Description: Calls the API to create a new Project 
+        /// Calls the API to create a new Project 
         /// </summary>
         /// <param name="URL"></param>
         /// <param name="NewProject"></param>
@@ -436,11 +441,8 @@ namespace Grok.Numenta
             }
         }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 20 November, 2012
-        /// Method: CreateProject
-        /// Description: Calls the API to create a new Project 
+        /// <summary>        
+        ///Calls the API to create a new Project 
         /// </summary>
         /// <param name="NewProject"></param>
         /// <returns></returns>
@@ -450,10 +452,7 @@ namespace Grok.Numenta
         }
 
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 20 November, 2012
-        /// Method: CreateProject
-        /// Description: Calls the API to create a new Project 
+        /// Calls the API to create a new Project 
         /// </summary>
         /// <param name="ProjectName"></param>
         /// <returns></returns>
@@ -465,10 +464,7 @@ namespace Grok.Numenta
         }
 
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 20 November, 2012
-        /// Method: RetrieveProjects
-        /// Description: Calls the API to retrieve a list of Projects 
+        /// Calls the API to retrieve a list of Projects 
         /// </summary>
         /// <returns></returns>
         public List<Project> RetrieveProjects()
@@ -477,10 +473,7 @@ namespace Grok.Numenta
         }
 
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 11 December, 2012
-        /// Method: RetrieveProjects
-        /// Description: Calls the API to retrieve a list of Projects 
+        /// Calls the API to retrieve a list of Projects 
         /// </summary>
         /// <param name="URL"></param>
         /// <returns></returns>
@@ -509,10 +502,7 @@ namespace Grok.Numenta
         }
 
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 11 December, 2012
-        /// Method: RetrieveProject
-        /// Description: Calls the API to retrieve a specific Project
+        /// Calls the API to retrieve a specific Project
         /// </summary>
         /// <param name="URL"></param>
         /// <returns></returns>
@@ -529,10 +519,7 @@ namespace Grok.Numenta
         }
 
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 20 November, 2012
-        /// Method: RetrieveProject
-        /// Description: Calls the API to retrieve a specific Project
+        /// Calls the API to retrieve a specific Project
         /// </summary>
         /// <param name="CurrentProject"></param>
         /// <returns></returns>
@@ -542,10 +529,7 @@ namespace Grok.Numenta
         }
 
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 26 November, 2012
-        /// Method: DeleteProject
-        /// Description: Deletes the project at the specified URL
+        /// Deletes the project at the specified URL
         /// </summary>
         /// <param name="URL"></param>
         /// <returns></returns>
@@ -561,10 +545,7 @@ namespace Grok.Numenta
         }
 
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 26 November, 2012
-        /// Method: DeleteProject
-        /// Description: Deletes the project 
+        /// Deletes the project 
         /// </summary>
         /// <param name="project"></param>
         /// <returns></returns>
@@ -576,10 +557,7 @@ namespace Grok.Numenta
 
         #region Stream Methods
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 11 December, 2012
-        /// Method: CreateStream
-        /// Description: Calls the API to create a Stream
+        /// Calls the API to create a Stream
         /// </summary>
         /// <param name="URL"></param>
         /// <param name="NewStream"></param>
@@ -599,10 +577,7 @@ namespace Grok.Numenta
         }
 
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 20 November, 2012
-        /// Method: CreateStream
-        /// Description: Calls the API to create a Stream
+        /// Calls the API to create a Stream
         /// </summary>
         /// <param name="NewStream"></param>
         /// <returns></returns>
@@ -612,10 +587,7 @@ namespace Grok.Numenta
         }
 
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 11 December, 2012
-        /// Method: RetrieveStreams
-        /// Description: Calls the API to retrieve a list of Streams
+        /// Calls the API to retrieve a list of Streams
         /// </summary>
         /// <param name="URL"></param>
         /// <returns></returns>
@@ -642,10 +614,7 @@ namespace Grok.Numenta
         }
 
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 11 December, 2012
-        /// Method: RetrieveStream
-        /// Description: Calls the API to retrieve a specific Stream
+        /// Calls the API to retrieve a specific Stream
         /// </summary>
         /// <param name="URL"></param>
         /// <returns></returns>
@@ -662,10 +631,7 @@ namespace Grok.Numenta
         }
 
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 20 November, 2012
-        /// Method: RetrieveStreamById
-        /// Description: Calls the API to retrieve a list of Streams
+        /// Calls the API to retrieve a list of Streams
         /// </summary>
         /// <param name="StreamID"></param>
         /// <returns></returns>
@@ -676,10 +642,7 @@ namespace Grok.Numenta
         }
 
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 11 December, 2012
-        /// Method: AppendData
-        /// Description: Calls the API to append data to a Stream
+        /// Calls the API to append data to a Stream
         /// </summary>
         /// <param name="URL"></param>
         /// <param name="Data"></param>
@@ -727,10 +690,7 @@ namespace Grok.Numenta
         }
 
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 20 November, 2012
-        /// Method: AppendData
-        /// Description: Calls the API to append data to a Stream
+        /// Calls the API to append data to a Stream
         /// </summary>
         /// <param name="URL"></param>
         /// <param name="Data"></param>
@@ -740,10 +700,7 @@ namespace Grok.Numenta
         }
 
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 26 November, 2012
-        /// Method: DeleteStream
-        /// Description: Deletes the Stream at the specified URL
+        /// Deletes the Stream at the specified URL
         /// </summary>
         /// <param name="URL"></param>
         /// <returns></returns>
@@ -759,10 +716,7 @@ namespace Grok.Numenta
         }
 
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 26 November, 2012
-        /// Method: DeleteStream
-        /// Description: Deletes the Stream 
+        /// Deletes the Stream 
         /// </summary>
         /// <param name="StreamToDelete"></param>
         /// <returns></returns>
@@ -774,10 +728,7 @@ namespace Grok.Numenta
 
         #region Swarm Methods
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 11 December, 2012
-        /// Method: RetrieveSwarm
-        /// Description: Calls the API to retrieve a specific Swarm
+        /// Calls the API to retrieve a specific Swarm
         /// </summary>
         /// <param name="URL"></param>
         /// <returns></returns>
@@ -794,10 +745,7 @@ namespace Grok.Numenta
         }
 
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 11 December, 2012
-        /// Method: CreateSwarm
-        /// Description: Calls the API to create a Swarm
+        /// Calls the API to create a Swarm
         /// </summary>
         /// <param name="URL"></param>
         /// <returns></returns>
@@ -814,12 +762,42 @@ namespace Grok.Numenta
                 throw new APIException("Failed to create the Swarm", e);
             }
         }
-
+        public Swarm CreateSwarm(string URL, JObject parameters)
+        {
+            try
+            {
+                JObject options = new JObject();
+                options.Add("options", parameters);
+                JObject JSONResponse = PostJSONObject(URL, options);
+                return Swarm.CreateSwarm(this, JSONResponse);
+            }
+            catch (Exception e)
+            {
+                throw new APIException("Failed to create the Swarm", e);
+            }
+        }
+        public Swarm CreateSwarm(string URL, Dictionary<string, string> options)
+        {
+            try
+            {
+                JObject JsonParams = null;
+                if (options != null && options.Count > 0)
+                {
+                    JsonParams = new JObject();
+                    foreach (string Key in options.Keys)
+                    {
+                        JsonParams.Add(Key, options[Key]);
+                    }
+                }
+                return CreateSwarm(URL, JsonParams);
+            }
+            catch (Exception e)
+            {
+                throw new APIException("Failed to create the Swarm", e);
+            }
+        }
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 26 November, 2012
-        /// Method: DeleteSwarm
-        /// Description: Deletes the Swarm at the specified URL
+        /// Deletes the Swarm at the specified URL
         /// </summary>
         /// <param name="URL"></param>
         /// <returns></returns>
@@ -835,10 +813,7 @@ namespace Grok.Numenta
         }
 
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 26 November, 2012
-        /// Method: DeleteSwarm
-        /// Description: Deletes the Swarm 
+        /// Deletes the Swarm 
         /// </summary>
         /// <param name="SwarmToDelete"></param>
         /// <returns></returns>
@@ -850,10 +825,7 @@ namespace Grok.Numenta
 
         #region Model Methods
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 11 December, 2012
-        /// Method: SendModelCommand
-        /// Description: Calls the API to send a command for a Model
+        /// Calls the API to send a command for a Model
         /// </summary>
         /// <param name="URL"></param>
         /// <param name="Command"></param>
@@ -878,10 +850,7 @@ namespace Grok.Numenta
         }
 
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 20 November, 2012
-        /// Method: SendModelCommand
-        /// Description: Calls the API to send a command for a Model
+        /// Calls the API to send a command for a Model
         /// </summary>
         /// <param name="URL"></param>
         /// <param name="Command"></param>
@@ -910,10 +879,7 @@ namespace Grok.Numenta
         }
 
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 20 November, 2012
-        /// Method: SendModelCommand
-        /// Description: Calls the API to send a command for a Model
+        /// Calls the API to send a command for a Model
         /// </summary>
         /// <param name="URL"></param>
         /// <param name="Command"></param>
@@ -924,10 +890,7 @@ namespace Grok.Numenta
         }
 
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 20 November, 2012
-        /// Method: SendModelCommand
-        /// Description: Calls the API to send a command for a Model
+        /// Calls the API to send a command for a Model
         /// </summary>
         /// <param name="CurrentModel"></param>
         /// <param name="Command"></param>
@@ -939,10 +902,7 @@ namespace Grok.Numenta
         }
 
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 20 November, 2012
-        /// Method: SendModelCommand
-        /// Description: Calls the API to send a command for a Model
+        /// Calls the API to send a command for a Model
         /// </summary>
         /// <param name="CurrentModel"></param>
         /// <param name="Command"></param>
@@ -953,10 +913,7 @@ namespace Grok.Numenta
         }
 
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 11 December, 2012
-        /// Method: RetrieveOutputData
-        /// Description: Calls the API to retrieve output data for a Model
+        /// Calls the API to retrieve output data for a Model
         /// </summary>
         /// <param name="URL"></param>
         /// <returns></returns>
@@ -973,10 +930,7 @@ namespace Grok.Numenta
         }
 
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 11 December, 2012
-        /// Method: CreateModel
-        /// Description: Calls the API to create a new Model
+        /// Calls the API to create a new Model
         /// </summary>
         /// <param name="URL"></param>
         /// <param name="NewModel"></param>
@@ -996,10 +950,7 @@ namespace Grok.Numenta
         }
 
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 20 November, 2012
-        /// Method: CreateModel
-        /// Description: Calls the API to create a new Model
+        /// Calls the API to create a new Model
         /// </summary>
         /// <param name="NewModel"></param>
         /// <returns></returns>
@@ -1009,10 +960,7 @@ namespace Grok.Numenta
         }
 
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 11 December, 2012
-        /// Method: RetrieveModels
-        /// Description: Calls the API to retrieve a list of Model
+        /// Calls the API to retrieve a list of Model
         /// </summary>
         /// <param name="URL"></param>
         /// <returns></returns>
@@ -1040,10 +988,7 @@ namespace Grok.Numenta
         }
 
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 11 December, 2012
-        /// Method: RetrieveModel
-        /// Description: Calls the API to retrieve a specific Model
+        /// Calls the API to retrieve a specific Model
         /// </summary>
         /// <param name="URL"></param>
         /// <returns></returns>
@@ -1060,10 +1005,7 @@ namespace Grok.Numenta
         }
 
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 20 November, 2012
-        /// Method: RetrieveModelById
-        /// Description: Calls the API to retrieve a specific Model
+        /// Calls the API to retrieve a specific Model
         /// </summary>
         /// <param name="ID"></param>
         /// <returns></returns>
@@ -1074,10 +1016,7 @@ namespace Grok.Numenta
         }
 
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 26 November, 2012
-        /// Method: DeleteModel
-        /// Description: Deletes the Model at the specified URL
+        /// Deletes the Model at the specified URL
         /// </summary>
         /// <param name="URL"></param>
         /// <returns></returns>
@@ -1093,10 +1032,7 @@ namespace Grok.Numenta
         }
 
         /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 26 November, 2012
-        /// Method: DeleteModel
-        /// Description: Deletes the Model 
+        /// Deletes the Model 
         /// </summary>
         /// <param name="ModelToDelete"></param>
         /// <returns></returns>

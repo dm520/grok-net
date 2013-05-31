@@ -17,6 +17,15 @@ using CsvHelper;
 
 namespace HelloGrok
 {
+    /// <summary>
+    /// Welcome to part three of the Hello Grok Tutorial!
+    /// 
+    /// In this tutorial we will:
+    /// 
+    /// Create a new model optimized to detect anomalies, promote the model to production,
+    /// Stream new records and detect which of these new records are anomalous.
+    /// 
+    /// </summary>
     public class HelloAnomaly
     {
         public static void RunHelloAnomaly()
@@ -53,9 +62,8 @@ namespace HelloGrok
                         DataSourceField.TYPE_DATETIME,
                         DataSourceField.FLAG_TIMESTAMP);
 
-                DataSourceField consumption = new DataSourceField(
-                        "consumption",
-                        DataSourceField.TYPE_SCALAR);
+                // Make sure to specify the field's min and max values.
+                DataSourceField consumption = new DataSourceField("consumption",0.0,100.0);
 
                 DataSource dataSource = new DataSource();
                 dataSource.name = "My Anomaly Data Source";
@@ -87,7 +95,7 @@ namespace HelloGrok
                 Console.WriteLine("Creating a new Anomaly model.");
 
                 /*
-                 * Note the new Model Type parameter, you dont pass the model type
+                 * Note the new Model Type parameter, if you dont pass the model type
                  * Grok will use Model.TYPE_PREDICTOR as default.
                  * In our case we want to create an anmomaly model (Model.TYPE_ANOMALY).
                  * As a result, two new fields will be added to the output:
@@ -105,7 +113,7 @@ namespace HelloGrok
                 Console.WriteLine("Streaming data from local file " + filename
                         + " to Model " + HelloGrokModel.id);
 
-                DataTable input = new DataTable(new FileInfo(filename));
+                DataTable input = new DataTable(new FileInfo(filename), false, 4000);
                 Console.WriteLine("Starting data upload...");
                 stream.AppendData(input, new SampleUploadCallback());
                 Console.WriteLine("Data successfully streamed to Grok!");
@@ -149,20 +157,78 @@ namespace HelloGrok
                     {
                         break;
                     }
-
+                    // Wait until this result expires before refreshing the swarm object.
+                    // The server will use this property to hint when the client should check for an update.
                     Thread.Sleep(swarm.Expires * 1000);
                 }
 
                 // Success!
                 Console.WriteLine("You win! Your Grok Swarm is complete.");
 
-                DateTime EndTime = DateTime.Now;
-                TimeSpan Duration = EndTime.Subtract(StartTime);
-                Console.WriteLine("Total time was " + Duration.TotalSeconds + " seconds");
+                Console.WriteLine("Promoting model");
+                HelloGrokModel.Promote(true);
+
+                /*
+                 * Anomaly models use 0.8 as the anomaly score threshold for default anomaly classification.
+                 * We can override this threshold using the "SetAnomalyThreshold" API call.
+                 * In our case we are lowering the threshold to 0.7.
+                 */
+                HelloGrokModel.SetAnomalyThreshold(0.7);
+
+                /*
+                 * Anomaly models will skip the first records of the dataset before 
+                 * it starts detecting and labeling anomalies. 
+                 * It uses the swarm size as the default value for this parameter. 
+                 * 
+                 * We will override and tell the model to wait for the first 1000 records
+                 * before labeling anomalies.
+                 */
+                HelloGrokModel.SetAutoDetectWaitRecords(1000);
+
+                /*
+                 * Add a little wonkiness to the data for September 1, 2010. We add +/- 5 to the
+                 * energy reading and a small scale factor. This should show up as unpredicted,
+                 * and therefore have higher than normal anomaly scores. Note that a threshold
+                 * based system would not detect this behavior as an anomaly.
+                */
+                Console.WriteLine("Adding some artificial anomalies on September 1, 2010 ...");
+                DataTable streamData = new DataTable(new FileInfo(filename), false, 4000, 4000);
+                List<String[]> newRecords = streamData.Data;
+                double[] offset = { -5, -5, -5, -5, 5, 5, 5, 5 };
+                for (int i=1856;i<1952;i++) {
+                    String [] row = newRecords[i];
+                    row[1] = (Double.Parse(row[1])*0.75 + offset[i%8]).ToString();
+                    newRecords[i] = row;
+                }
+
+                // Data in
+                Console.WriteLine("Sending records...");
+                stream.AppendData(streamData);
+                Console.WriteLine("Data successfully streamed to Grok!");
+            
+                // Wait a few seconds...
+                Console.WriteLine("Waiting for Grok to process...");
+                HelloGrokModel.WaitForStabilization(true);
 
                 // Retrieve Swarm results
                 Console.WriteLine("Getting results from Swarm");
-                DataTable output = HelloGrokModel.RetrieveData();
+                DataTable results = HelloGrokModel.RetrieveData(2500);
+                
+                // Get anomaly field index from results
+                Console.WriteLine("Retrieving anomalies ...");
+                Dictionary<int, List<String>> labels = HelloGrokModel.GetLabels();
+                int anomalyField = results.AnomalyScoreFieldIndex;
+            
+                // Update result with anomaly labels
+                List<String[]> resultsRecords = results.Data;
+                for (int i=0;i<resultsRecords.Count;i++) {
+                    String [] row = resultsRecords[i];
+                    List<String> rowLabels;
+                    if (labels.TryGetValue(int.Parse(row[0]), out rowLabels)) {
+                        row[anomalyField] = string.Join(",", rowLabels);
+                        resultsRecords[i]=row;
+                    }
+                }
 
                 // Write results out to a CSV
                 DirectoryInfo OutputDirectory = new DirectoryInfo("output");
@@ -174,7 +240,7 @@ namespace HelloGrok
 
                 string OutputFile = "output/AnomalyScores.csv";
                 Console.WriteLine("Saving results to " + OutputFile);
-                output.WriteCSV(new FileInfo(OutputFile));
+                results.WriteCSV(new FileInfo(OutputFile));
 
                 // Fin
                 Console.WriteLine("You can now inspect your results. \n\n");

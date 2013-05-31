@@ -12,6 +12,11 @@ using System.Runtime.Serialization.Json;
 
 namespace Grok.Numenta
 {
+    /// <summary>
+    /// The APIException class represents an error encountered when trying to execute an API command. 
+    /// In the common case, these errors will only occur as a result of bad requests, 
+    /// such as malformed inputs or referencing non-existent entities.
+    /// </summary>
     public class APIException : Exception
     {
         public APIException() : base() { }

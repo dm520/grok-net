@@ -135,6 +135,23 @@ namespace Grok.Numenta.UnitTests
         }
 
         [Test]
+        public void TestEmptyDataField()
+        {
+            string[][] recordsToStream = {
+					    new string [] { "2011-01-01 00:00:00.0", "5.3" },
+					    new string [] { "2011-01-01 00:15:00.0", "" },
+					    new string [] { "2011-01-01 00:30:00.0", "5.1" },
+					    new string [] { "2011-01-01 00:45:00.0", "5.3" },
+					    new string [] { "2011-01-01 01:00:00.0", "5.2" },
+					    new string [] { "2011-01-01 01:15:00.0", "5.5" } };
+
+            DataTable DTUnderTest = new DataTable(recordsToStream);
+
+            Assert.AreEqual(DTUnderTest.Data[0][0], "2011-01-01 00:00:00.0");
+            Assert.IsNull(DTUnderTest.Data[1][1]);
+        }
+
+        [Test]
         public void TestCustomAccessor_KeyValue_Exists()
         {
             JObject JSONObject = JObject.Parse(_InputJSON);
@@ -185,6 +202,7 @@ namespace Grok.Numenta.UnitTests
             Assert.AreEqual(1, DTUnderTest.TimestampIndex);
             Assert.AreEqual(2, DTUnderTest.PredictedFieldIndex);
             Assert.AreEqual(7, DTUnderTest.PredictionFieldIndex);
+            Assert.AreEqual(3, DTUnderTest.AnomalyScoreFieldIndex);
         }
         private static string _TestData = @"""data"": [
                                               [
@@ -235,7 +253,8 @@ namespace Grok.Numenta.UnitTests
                                                   ""engineJobId"": 3054, 
                                                   ""predictedFieldPredictionIndex"": 7, 
                                                   ""modelStatus"": ""running"", 
-                                                  ""predictedFieldIndex"": 2
+                                                  ""predictedFieldIndex"": 2,
+                                                  ""anomalyScoreFieldIndex"": 3
                                                 }, " + _TestData + @" },
                                               ""ok"": true
                                             }";

@@ -14,11 +14,8 @@ using System.Threading.Tasks;
 
 namespace Grok.Numenta
 {
-    /// <summary>
-    /// Author: Jared Casner
-    /// Last Updated: 19 November, 2012
-    /// Class: UploadEvent
-    /// Description: Event to call during Upload to track the progress of the upload
+    /// <summary>    
+    /// Event to call during Upload to track the progress of the upload
     /// </summary>
     public class UploadEvent
     {
@@ -35,11 +32,8 @@ namespace Grok.Numenta
             set { _PercentComplete = value; }
         }
 
-        /// <summary>
-        /// Author: Jared Casner
-        /// Last Updated: 19 November, 2012
-        /// Method: ToString
-        /// Description: Returns a string representation of the upload percentage
+        /// <summary>        
+        /// Returns a string representation of the upload percentage
         /// </summary>
         /// <returns></returns>
 	    public override string ToString() 

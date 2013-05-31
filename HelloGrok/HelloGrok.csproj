@@ -66,7 +66,9 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="data\rec-center-advanced-swarm.csv" />
-    <None Include="data\rec-center.csv" />
+    <None Include="data\rec-center.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

@@ -14,10 +14,7 @@ using Newtonsoft.Json.Linq;
 namespace Grok.Numenta
 {
     /// <summary>
-    /// Author: Jared Casner
-    /// Last Updated: 20 November, 2012
-    /// Interface: IAPIClient
-    /// Description: Interface for the API Client which allows us to be able to mock the API Client for testing purposes
+    /// Interface for the API Client which allows us to be able to mock the API Client for testing purposes
     /// </summary>
     public interface IAPIClient
     {
@@ -41,6 +38,8 @@ namespace Grok.Numenta
         void AppendData(string URL, List<string[]> Data);
 
         Swarm CreateSwarm(string URL);
+        Swarm CreateSwarm(string URL, JObject options);
+        Swarm CreateSwarm(string URL, Dictionary<string, string> options);
         Swarm RetrieveSwarm(string URL);
 
         JObject SendModelCommand(string URL, string Command, JObject Parameters);

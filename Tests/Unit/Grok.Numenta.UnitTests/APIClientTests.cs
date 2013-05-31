@@ -489,6 +489,16 @@ namespace Grok.Numenta.UnitTests
 
             Assert.Throws<APIException>(delegate { ClientUnderTest.RetrieveModel(string.Empty); });
         }
+
+
+        [Test]
+        public void TestDeleteModel()
+        {
+            APIClient ClientUnderTest = new APIClient("FAKE_API_KEY");
+            ClientUnderTest.HTTPClient = GetHttpClientWith204Response();
+            ClientUnderTest.DeleteModel("http://localhost:8888");
+
+        }
         #endregion
 
         #region Connection Tests
@@ -580,6 +590,17 @@ namespace Grok.Numenta.UnitTests
         {
             HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
             response.Content = new StringContent(RequestContent);
+            HttpClient HTTPClient = new HttpClient(new FakeHandler
+            {
+                Response = response,
+                InnerHandler = new HttpClientHandler()
+            });
+            return HTTPClient;
+        }
+
+        private HttpClient GetHttpClientWith204Response()
+        {
+            HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.NoContent);
             HttpClient HTTPClient = new HttpClient(new FakeHandler
             {
                 Response = response,
