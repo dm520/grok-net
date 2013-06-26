@@ -53,6 +53,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\..\Grok.Numenta\Properties\VersionInfo.cs">
+      <Link>Properties\VersionInfo.cs</Link>
+    </Compile>
     <Compile Include="APIClientTests.cs" />
     <Compile Include="DataSourceFieldTests.cs" />
     <Compile Include="DataSourceTests.cs" />

@@ -55,7 +55,7 @@ namespace Grok.Numenta
     {
         #region Members and Accessors
         #region Member Data
-        private static string _NumentaURI = "https://api.numenta.com/";
+        private static string _NumentaURI = "https://api.groksolutions.com/";
         private static string _Version = "v2";
         private static int _MaxRowsPerUpload = 500;
 
@@ -163,7 +163,7 @@ namespace Grok.Numenta
         public APIClient(string UserAPIKey) : this(UserAPIKey, _NumentaURI) { }
 
         /// <summary>
-        /// Constructor taking the API Key of the User and a base URL (e.g.: https://api.numenta.com)
+        /// Constructor taking the API Key of the User and a base URL (e.g.: https://api.groksolutions.com)
         /// </summary>
         /// <param name="UserAPIKey">The API Key to use</param>
         /// <param name="ConnectionURL">The API Server URL to use</param>

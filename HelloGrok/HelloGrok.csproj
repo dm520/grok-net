@@ -54,6 +54,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Grok.Numenta\Properties\VersionInfo.cs">
+      <Link>Properties\VersionInfo.cs</Link>
+    </Compile>
     <Compile Include="HelloGrok.cs" />
     <Compile Include="HelloGrokLauncher.cs" />
     <Compile Include="HelloGrokPart2.cs" />

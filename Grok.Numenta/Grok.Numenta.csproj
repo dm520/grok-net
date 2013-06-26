@@ -35,6 +35,12 @@
     <Prefer32Bit>false</Prefer32Bit>
     <DocumentationFile>..\Release\Grok.Numenta.XML</DocumentationFile>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>Grok.Numenta.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="CsvHelper, Version=1.15.0.19811, Culture=neutral, PublicKeyToken=8c4959082be5c823, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -76,11 +82,13 @@
     <Compile Include="UploadCallback.cs" />
     <Compile Include="UploadEvent.cs" />
     <Compile Include="User.cs" />
+    <Compile Include="Properties\VersionInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="LICENSE.txt" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Grok.Numenta.snk" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

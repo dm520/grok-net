@@ -48,7 +48,7 @@
         </member>
         <member name="M:Grok.Numenta.APIClient.#ctor(System.String,System.String)">
             <summary>
-            Constructor taking the API Key of the User and a base URL (e.g.: https://api.numenta.com)
+            Constructor taking the API Key of the User and a base URL (e.g.: https://api.groksolutions.com)
             </summary>
             <param name="UserAPIKey">The API Key to use</param>
             <param name="ConnectionURL">The API Server URL to use</param>
